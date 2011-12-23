@@ -1,0 +1,5 @@
+h2. About
+
+The Mohiva Common project is a PHP library which provides functionality shared by all mohiva projects.
+
+This project is Open Source and released under the terms of the New BSD License.

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context xmlns:mx="urn:com.mohiva.framework.xml.helpers">
+	
+	<books xmlns:custom="urn:com.mohiva.www.xml.files.helpers">
+		<book number="1">
+			<title>Blindsighted</title>
+			<author>Slaughter, Karin</author>
+			<price>7.99</price>
+		</book>
+		<book number="2">
+			<title>Ice Cold</title>
+			<author>Gerritsen, Tess</author>
+			<price>14.3</price>
+		</book>
+		<book number="3">
+			<title>Live to Tell</title>
+			<author>Gardner, Lisa</author>
+			<price>14.3</price>
+		</book>
+		<book number="4">
+			<title>Sizzling Sixteen</title>
+			<author>Evanovich, Janet</author>
+			<price>14.83</price>
+		</book>
+	</books>
+	
+</context>
