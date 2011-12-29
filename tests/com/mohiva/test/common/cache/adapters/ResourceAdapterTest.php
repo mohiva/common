@@ -124,8 +124,8 @@ class ResourceAdapterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testStoreThrowsIOException() {
 		
-		/* @var \com\mohiva\common\cache\adapters\ResourceContainer $stub */
-		$stub = $this->getMock('ResourceContainer', array(), array());
+		/* @var \com\mohiva\common\io\ResourceContainer $stub */
+		$stub = $this->getMock('\com\mohiva\common\io\ResourceContainer', array(), array());
 		$stub->expects($this->any())
 			->method('create')
 			->will($this->throwException(new IOException()));
@@ -168,8 +168,8 @@ class ResourceAdapterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testRemoveThrowsIOException() {
 		
-		/* @var \com\mohiva\common\cache\adapters\ResourceContainer $stub */
-		$stub = $this->getMock('ResourceContainer', array(), array());
+		/* @var \com\mohiva\common\io\ResourceContainer $stub */
+		$stub = $this->getMock('\com\mohiva\common\io\ResourceContainer', array(), array());
 		$stub->expects($this->any())
 			->method('remove')
 			->will($this->throwException(new IOException()));

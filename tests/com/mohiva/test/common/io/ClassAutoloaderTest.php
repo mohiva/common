@@ -18,8 +18,10 @@
  */
 namespace com\mohiva\test\common\io;
 
+use com\mohiva\test\common\Bootstrap;
 use com\mohiva\common\io\ClassLoader;
 use com\mohiva\common\io\ClassAutoloader;
+use com\mohiva\common\io\DefaultClassLoader;
 
 /**
  * Unit test case for the `ClassAutoloader` class.
@@ -34,28 +36,18 @@ use com\mohiva\common\io\ClassAutoloader;
 class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	
 	/**
-	 * Contains all registered loaders.
+	 * Contains the registered autoloader for this test case.
 	 * 
-	 * @var array
+	 * @var \com\mohiva\common\io\ClassAutoloader
 	 */
-	private $loaders = array();
+	private $autoLoader = null;
 	
 	/**
 	 * Setup the test case.
 	 */
 	public function setUp() {
 		
-		// Store all default loaders
-		$loaders = spl_autoload_functions();
-		$this->loaders = $loaders !== false ? $loaders : array();
-		
-		// Unregister all default loaders(except phpunit_autoload)
-		foreach ($this->loaders as $loader) {
-			if ($loader == 'phpunit_autoload') {
-				continue;
-			}
-			spl_autoload_unregister($loader);
-		}
+		Bootstrap::$autoloader->unregister();
 	}
 	
 	/**
@@ -63,20 +55,53 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function tearDown() {
 		
-		// Reset all autoloaders which were set during tests(except phpunit_autoload)
-		$loaders = spl_autoload_functions();
-		$loaders = $loaders !== false ? $loaders : array();
-		foreach ($loaders as $loader) {
-			if ($loader == 'phpunit_autoload') {
-				continue;
-			}
-			spl_autoload_unregister($loader);
-		}
+		if ($this->autoLoader) $this->autoLoader->unregister();
+		Bootstrap::$autoloader->register();
+	}
+	
+	/**
+	 * Test all getters for the values set with the constructor.
+	 */
+	public function testConstructorAccessors() {
 		
-		// Restore all default loaders(except phpunit_autoload)
-		foreach ($this->loaders as $loader) {
-			spl_autoload_register($loader);
-		}
+		$classLoader = new DefaultClassLoader();
+		$autoLoader = new ClassAutoloader($classLoader);
+		
+		$this->assertSame($classLoader, $autoLoader->getClassLoader());
+	}
+	
+	/**
+	 * Test the `setPolicy` and `getPolicy` accessors.
+	 */
+	public function testPolicyAccessors() {
+		
+		$autoLoader = new ClassAutoloader();
+		$autoLoader->setPolicy(ClassAutoloader::POLICY_EXCEPTION);
+		$autoLoader->setPolicy(ClassAutoloader::POLICY_SILENT);
+		
+		$this->assertSame(ClassAutoloader::POLICY_SILENT, $autoLoader->getPolicy());
+	}
+	
+	/**
+	 * Test if the `setPolicy` method throws an exception if an invalid value is given.
+	 * 
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetPolicyThrowsException() {
+		
+		$autoLoader = new ClassAutoloader();
+		$autoLoader->setPolicy(microtime(true));
+	}
+	
+	/**
+	 * Test the `registerNamespace` and `getNamespaces` accessors.
+	 */
+	public function testNamespaceAccessors() {
+		
+		$autoLoader = new ClassAutoloader();
+		$autoLoader->registerNamespace('com\mohiva');
+		
+		$this->assertSame(array('com\mohiva'), $autoLoader->getNamespaces());
 	}
 	
 	/**
@@ -84,15 +109,15 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIfAutloaderCanBeRegistered() {
 		
-		$autoLoader = new ClassAutoloader();
-		$autoLoader->register();
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
 		
 		$found = false;
-		$class = get_class($autoLoader);
+		$class = get_class($this->autoLoader);
 		$loaders = spl_autoload_functions();
 		$loaders = $loaders !== false ? $loaders : array();
 		foreach ($loaders as $loader) {
-			if ($loader === $autoLoader->getCallback()) {
+			if ($loader === $this->autoLoader->getCallback()) {
 				$found = true;
 			}
 		}
@@ -106,18 +131,18 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	public function testIfAutloaderCanBeUnregistered() {
 		
 		// Register the autoloader first
-		$autoLoader = new ClassAutoloader();
-		$autoLoader->register();
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
 		
 		// Unregister autoloader
-		$autoLoader->unregister();
+		$this->autoLoader->unregister();
 		
 		$found = false;
-		$class = get_class($autoLoader);
+		$class = get_class($this->autoLoader);
 		$loaders = spl_autoload_functions();
 		$loaders = $loaders !== false ? $loaders : array();
 		foreach ($loaders as $loader) {
-			if ($loader === $autoLoader->getCallback()) {
+			if ($loader === $this->autoLoader->getCallback()) {
 				$found = true;
 			}
 		}
@@ -126,14 +151,47 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	/**
+	 * Test if the `isRegistered` method returns true if the autoloader is registered.
+	 */
+	public function testIsRegisteredReturnsTrue() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
+		
+		$this->assertTrue($this->autoLoader->isRegistered());
+	}
+	
+	/**
+	 * Test if the `isRegistered` method returns false if the autoloader isn't registered.
+	 */
+	public function testIsRegisteredReturnsFalseIfIsNotRegistered() {
+		
+		$autoLoader = new ClassAutoloader();
+		
+		$this->assertFalse($autoLoader->isRegistered());
+	}
+	
+	/**
+	 * Test if the `isRegistered` method returns false if the autoloader is unregistered.
+	 */
+	public function testIsRegisteredReturnsFalseIfIsUnregistered() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
+		$this->autoLoader->unregister();
+		
+		$this->assertFalse($this->autoLoader->isRegistered());
+	}
+	
+	/**
 	 * Check if can get the registered callback function.
 	 */
 	public function testGetCallback() {
 		
-		$autoLoader = new ClassAutoloader();
-		$autoLoader->register();
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
 		
-		$this->assertTrue($autoLoader->getCallback() instanceof \Closure);
+		$this->assertTrue($this->autoLoader->getCallback() instanceof \Closure);
 	}
 	
 	/**
@@ -144,5 +202,69 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 		$autoLoader = new ClassAutoloader();
 		
 		$this->assertTrue($autoLoader->getClassLoader() instanceof ClassLoader);
+	}
+	
+	/**
+	 * Test if the autoloader doesn't throw an exception if the `silent` policy is set.
+	 */
+	public function testPolicySilent() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
+		
+		try {
+			class_exists('NotExistingClass', true);
+		} catch (\Exception $e) {
+			$this->fail("Autoloader mustn't throw an exception");
+		}
+	}
+	
+	/**
+	 * Test if the autoloader throws an exception if the `exception` policy is set.
+	 * 
+	 * @expectedException \com\mohiva\common\io\exceptions\ClassNotFoundException
+	 */
+	public function testPolicyException() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->setPolicy(ClassAutoloader::POLICY_EXCEPTION);
+		$this->autoLoader->register();
+		
+		class_exists('NotExistingClass', true);
+	}
+	
+	/**
+	 * Test if the autoloader loads any class if no namespace is registered.
+	 */
+	public function testLoadsClassIfNoNamespaceIsRegistered() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->register();
+		
+		$this->assertTrue(class_exists('com\mohiva\test\resources\common\io\ClassWithoutRegisteredNamespaces', true));
+	}
+	
+	/**
+	 * Test if the autoloader loads a class which matches the registered namespaces.
+	 */
+	public function testLoadsClassInRegisteredNamespaces() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->registerNamespace('com\mohiva\test\resources\common\io');
+		$this->autoLoader->register();
+		
+		$this->assertTrue(class_exists('com\mohiva\test\resources\common\io\ClassInRegisteredNamespaces', true));
+	}
+	
+	/**
+	 * Test if the autoloader skips a class which doesn't match the registered namespaces.
+	 */
+	public function testSkipsClassNotInRegisteredNamespaces() {
+		
+		$this->autoLoader = new ClassAutoloader();
+		$this->autoLoader->registerNamespace('com\mohiva\test\resources\common\not\existing');
+		$this->autoLoader->register();
+		
+		$this->assertFalse(class_exists('com\mohiva\test\resources\common\io\ClassNotInRegisteredNamespaces', true));
 	}
 }

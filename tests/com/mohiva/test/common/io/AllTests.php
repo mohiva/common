@@ -36,6 +36,7 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		$this->setName(__CLASS__);
+		$this->addTest(helpers\AllTests::suite());
 		$this->addTestSuite('\com\mohiva\test\common\io\IncludePathTest');
 		$this->addTestSuite('\com\mohiva\test\common\io\ClassAutoloaderTest');
 		$this->addTestSuite('\com\mohiva\test\common\io\DefaultClassLoaderTest');

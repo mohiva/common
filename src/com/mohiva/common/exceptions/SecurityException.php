@@ -10,34 +10,22 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\io;
+namespace com\mohiva\common\exceptions;
 
 /**
- * Interface to be implemented by objects that can load classes.
+ * `SecurityException` is the superclass for all security related exceptions.
  * 
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-interface ClassLoader {
-	
-	/**
-	 * Loads the given class.
-	 * 
-	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return 
-	 * is disabled.
-	 * 
-	 * @throws ClassNotFoundException if the class cannot be found.
-	 */
-	public function load($fqn);
-}
+class SecurityException extends \Exception {}

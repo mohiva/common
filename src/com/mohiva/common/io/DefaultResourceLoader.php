@@ -83,7 +83,7 @@ class DefaultResourceLoader implements ResourceLoader {
 		$path = $matches[2];
 		
 		$loader = $this->getClassLoader();
-		$class = $loader->loadClass($handle);
+		$class = $loader->load($handle);
 		$resource = $class->newInstance(new SplFileInfo($path));
 		
 		return $resource;
@@ -106,7 +106,7 @@ class DefaultResourceLoader implements ResourceLoader {
 	public function getResourceByType($path, $type) {
 		
 		$loader = $this->getClassLoader();
-		$class = $loader->loadClass($type);
+		$class = $loader->load($type);
 		$resource = $class->newInstance(new SplFileInfo($path));
 		
 		return $resource;

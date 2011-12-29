@@ -21,9 +21,7 @@ namespace com\mohiva\test\common\io;
 use com\mohiva\test\common\Bootstrap;
 use com\mohiva\common\io\DefaultClassLoader;
 use com\mohiva\common\io\exceptions\ClassNotFoundException;
-use com\mohiva\common\io\exceptions\FileNotFoundException;
 use com\mohiva\common\io\exceptions\MalformedNameException;
-use com\mohiva\common\io\exceptions\MissingDeclarationException;
 
 /**
  * Unit test case for the `DefaultClassLoaderResource` class.
@@ -56,7 +54,7 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		
 		try {
 			$loader = new DefaultClassLoader();
-			$class = $loader->loadClass(self::VALID_CLASS);
+			$class = $loader->load(self::VALID_CLASS);
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
 		} catch (\Exception $e) {
 			$this->fail($e->getMessage());
@@ -64,13 +62,13 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	/**
-	 * Test if can load a interface from a given path.
+	 * Test if can load a interface from include path.
 	 */
-	public function testLoadClassFromPath() {
+	public function testLoadInterface() {
 		
 		try {
 			$loader = new DefaultClassLoader();
-			$class = $loader->loadClassFromPath(self::VALID_INTERFACE, Bootstrap::$testDir);
+			$class = $loader->load(self::VALID_INTERFACE);
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
 		} catch (\Exception $e) {
 			$this->fail($e->getMessage());
@@ -84,7 +82,7 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		
 		try {
 			$loader = new DefaultClassLoader();
-			$class = $loader->loadClassFromPath('\Pre_Namespace_ClassFixture', Bootstrap::$resourceDir . '/common/io');
+			$class = $loader->load('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture');
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
 		} catch (\Exception $e) {
 			$this->fail($e->getMessage());
@@ -93,18 +91,13 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	
 	/**
 	 * Test if a `MalformedNameException` will be thrown on invalid class name.
+	 * 
+	 * @expectedException \com\mohiva\common\io\exceptions\MalformedNameException
 	 */
 	public function testForMalformedNameException() {
 		
-		try {
-			$loader = new DefaultClassLoader();
-			$loader->loadClass(self::MALFORMED_CLASS);
-			$this->fail('ClassNotFoundException was expected but never thrown');
-		} catch (ClassNotFoundException $e) {
-			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MalformedNameException', $e->getPrevious());
-		} catch (\Exception $e) {
-			$this->fail($e->getMessage());
-		}
+		$loader = new DefaultClassLoader();
+		$loader->load(self::MALFORMED_CLASS);
 	}
 	
 	/**
@@ -112,21 +105,9 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testForFileNotFoundException() {
 		
-		// Load from include path
 		try {
 			$loader = new DefaultClassLoader();
-			$loader->loadClass(self::NOT_EXISTING_CLASS);
-			$this->fail('ClassNotFoundException was expected but never thrown');
-		} catch (ClassNotFoundException $e) {
-			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
-			$this->fail($e->getMessage());
-		}
-		
-		// Load from specified path
-		try {
-			$loader = new DefaultClassLoader();
-			$loader->loadClassFromPath(self::NOT_EXISTING_CLASS, Bootstrap::$testDir);
+			$loader->load(self::NOT_EXISTING_CLASS);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
@@ -136,9 +117,9 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	/**
-	 * Test if a `FileNotFoundException` will be thrown on not readable file from include path.
+	 * Test if a `FileNotFoundException` will be thrown on not readable file.
 	 */
-	public function testForFileNotFoundExceptionOnNotReadableFileFromIncludePath() {
+	public function testForFileNotFoundExceptionOnNotReadableFile() {
 		
 		clearstatcache();
 		$file = Bootstrap::$resourceDir . '/common/io/NotReadableFileFixture.php';
@@ -153,37 +134,7 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		
 		try {
 			$loader = new DefaultClassLoader();
-			$loader->loadClass(self::NOT_READABLE_CLASS, false);
-			chmod($file, $oldPerms);
-			$this->fail('ClassNotFoundException was expected but never thrown');
-		} catch (ClassNotFoundException $e) {
-			chmod($file, $oldPerms);
-			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
-			chmod($file, $oldPerms);
-			$this->fail($e->getMessage());
-		}
-	}
-	
-	/**
-	 * Test if a `FileNotFoundException` will be thrown on not readable file from path.
-	 */
-	public function testForFileNotFoundExceptionOnNotReadableFileFromPath() {
-		
-		clearstatcache();
-		$file = Bootstrap::$resourceDir . '/common/io/NotReadableFileFixture.php';
-		$oldPerms = fileperms($file);
-		chmod($file, 0333);
-		
-		// Check if can change permissions for the test
-		clearstatcache();
-		if (substr(sprintf('%o', fileperms($file)), -4) !== '0333') {
-			$this->markTestSkipped('Cannot change file permissions');
-		}
-		
-		try {
-			$loader = new DefaultClassLoader();
-			$loader->loadClassFromPath(self::NOT_READABLE_CLASS, Bootstrap::$testDir, false);
+			$loader->load(self::NOT_READABLE_CLASS, false);
 			chmod($file, $oldPerms);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
@@ -202,7 +153,7 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		
 		try {
 			$loader = new DefaultClassLoader();
-			$loader->loadClass(self::NOT_DECLARED, false);
+			$loader->load(self::NOT_DECLARED, false);
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MissingDeclarationException', 
 				$e->getPrevious()

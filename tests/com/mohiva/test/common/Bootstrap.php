@@ -69,18 +69,36 @@ class Bootstrap {
 	public static $resourceDir = null;
 	
 	/**
+	 * The default class loader.
+	 * 
+	 * @var \com\mohiva\common\io\ClassAutoloader
+	 */
+	public static $autoloader = null;
+	
+	/**
 	 * Set error reporting and determine several directories.
 	 */
 	public static function run() {
 		
-		/**
-		 * Set error reporting.
-		 */
-		error_reporting(E_ALL | E_STRICT);
+		self::setupPHP();
+		self::setupIncludePath();
+		self::setupClassAutoloader();
+	}
+	
+	/**
+	 * Setup PHP specific settings.
+	 */
+	private static function setupPHP() {
 		
-		/**
-		 * Set the include path for the lib and tests.
-		 */
+		error_reporting(E_ALL | E_STRICT);
+		date_default_timezone_set('UTC');
+	}
+	
+	/**
+	 * Setup the include path.
+	 */
+	private static function setupIncludePath() {
+		
 		$rootDir = realpath(dirname(__FILE__) . '/../../../../..');
 		self::$srcDir = realpath("{$rootDir}/src");
 		self::$testDir = realpath("{$rootDir}/tests");
@@ -93,14 +111,20 @@ class Bootstrap {
 			get_include_path()
 		);
 		self::$includePath = set_include_path(implode(PATH_SEPARATOR, $path));
+	}
+	
+	/**
+	 * Setup the class autoloader for all mohiva related files.
+	 */
+	private static function setupClassAutoloader() {
 		
-		/**
-		 * Setup the autoloader
-		 */
 		/** @noinspection PhpIncludeInspection */
 		require_once 'com/mohiva/common/io/ClassAutoloader.php';
-		$autoloader = new ClassAutoloader();
-		$autoloader->register(true, false);
+		
+		self::$autoloader = new ClassAutoloader();
+		self::$autoloader->setPolicy(ClassAutoloader::POLICY_EXCEPTION);
+		self::$autoloader->registerNamespace('com\mohiva');
+		self::$autoloader->register();
 	}
 }
 

@@ -18,6 +18,9 @@
  */
 namespace com\mohiva\common\io;
 
+use InvalidArgumentException;
+use com\mohiva\common\io\exceptions\ClassNotFoundException;
+
 /**
  * Registers the implementation of the `ClassLoader` interface 
  * with the SPL autoloader stack.
@@ -30,6 +33,23 @@ namespace com\mohiva\common\io;
  * @link      https://github.com/mohiva/common
  */
 class ClassAutoloader {
+	
+	/**
+	 * The silent policy catches all `ClassNotFoundExceptions` which could occur during 
+	 * the autoloader process. All other exceptions thrown by the class loader are not
+	 * caught.
+	 * 
+	 * @var int
+	 */
+	const POLICY_SILENT = 1;
+	
+	/**
+	 * The exception policy let through all `ClassNotFoundExceptions` which could occur during
+	 * the autoloader process.
+	 * 
+	 * @var int
+	 */
+	const POLICY_EXCEPTION = 2;
 	
 	/**
 	 * The `ClassLoader` implementation to use for autoloading.
@@ -46,6 +66,27 @@ class ClassAutoloader {
 	private $callback = null;
 	
 	/**
+	 * The policy for this autoloader.
+	 * 
+	 * @var int
+	 */
+	private $policy = self::POLICY_SILENT;
+	
+	/**
+	 * A list with namespace for which the autoloader is responsible.
+	 * 
+	 * @var array
+	 */
+	private $namespaces = array();
+	
+	/**
+	 * The number of registered namespaces.
+	 * 
+	 * @var int
+	 */
+	private $namespaceCnt = 0;
+	
+	/**
 	 * The class constructor.
 	 * 
 	 * @param ClassLoader $classLoader The `ClassLoader` implementation to use for class loading 
@@ -58,12 +99,61 @@ class ClassAutoloader {
 		} else {
 			require_once 'ClassLoader.php';
 			require_once 'DefaultClassLoader.php';
-			$this->classLoader = new DefaultClassLoader();
+			$this->classLoader = new DefaultClassLoader(false);
 		}
 	}
 	
 	/**
-	 * Register the `loadClass` method of the `ClassLoader` 
+	 * Set the policy of the autoloader.
+	 * 
+	 * @param int $policy One of the defined ClassAutoloader::POLICY_* constants.
+	 * @throws InvalidArgumentException if the policy value is invalid.
+	 */
+	public function setPolicy($policy) {
+		
+		if ($policy !== self::POLICY_SILENT && $policy !== self::POLICY_EXCEPTION) {
+			throw new InvalidArgumentException("Invalid value `{$policy}` for autoloader policy given");
+		}
+		
+		$this->policy = $policy;
+	}
+	
+	/**
+	 * Gets the policy of the autoloader.
+	 * 
+	 * @return int The value of one of the defined ClassAutoloader::POLICY_* constants.
+	 */
+	public function getPolicy() {
+		
+		return $this->policy;
+	}
+	
+	/**
+	 * Register a namespace for which the autoloader is responsible.
+	 * 
+	 * Namespaces can be used to guarantee that a autoloader load only classes for a particular project.
+	 * 
+	 * @param string $namespace A namespace which must be contained in the FQN of a class so that the autoloader
+	 * can load it.
+	 */
+	public function registerNamespace($namespace) {
+		
+		$this->namespaces[] = $namespace;
+		$this->namespaceCnt++;
+	}
+	
+	/**
+	 * Returns the list of registered namespaces.
+	 * 
+	 * @return array The list of registered namespaces.
+	 */
+	public function getNamespaces() {
+		
+		return $this->namespaces;
+	}
+	
+	/**
+	 * Register the `load` method of the `ClassLoader` 
 	 * implementation with the spl autoload stack.
 	 * 
 	 * @param boolean $throw This parameter specifies whether `register()` should throw 
@@ -74,23 +164,44 @@ class ClassAutoloader {
 	 */
 	public function register($throw = true, $prepend = true) {
 		
-		$classLoader = $this->classLoader;
-		$this->callback = function($fqn) use ($classLoader) {
-			/** @var $classLoader ClassLoader */
-			$classLoader->loadClass($fqn, false);
+		$this->callback = function($fqn) {
+			
+			if ($this->namespaceCnt && !$this->matchNamespace($fqn)) return;
+			
+			try {
+				$this->classLoader->load($fqn);
+			} catch (ClassNotFoundException $e) {
+				if ($this->policy === self::POLICY_EXCEPTION) {
+					throw $e;
+				}
+			}
 		};
 		
 		spl_autoload_register($this->callback, $throw, $prepend);
 	}
 	
 	/**
-	 * Unregister the `loadClass` Method of the `ClassLoader` 
+	 * Unregister the `load` Method of the `ClassLoader` 
 	 * implementation from the spl autoload stack.
 	 */
 	public function unregister() {
 		
+		if (!$this->isRegistered()) {
+			return;
+		}
+		
 		spl_autoload_unregister($this->callback);
 		$this->callback = null;
+	}
+	
+	/**
+	 * Indicates if the autoloader is registered or not.
+	 * 
+	 * @return boolean True if the autoloader is registered, false otherwise.
+	 */
+	public function isRegistered() {
+		
+		return $this->callback !== null;
 	}
 	
 	/**
@@ -111,5 +222,22 @@ class ClassAutoloader {
 	public function getCallback() {
 		
 		return $this->callback;
+	}
+	
+	/**
+	 * Check if the given FQN match one of the registered namespaces.
+	 * 
+	 * @param string $fqn The FQN to match against the registered namespaces.
+	 * @return boolean True if the FQN matches on of the registered namespaces, false otherwise.
+	 */
+	private function matchNamespace($fqn) {
+		
+		for ($i = 0; $i < $this->namespaceCnt; $i++) {
+			if (strpos($fqn, $this->namespaces[$i]) !== false) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

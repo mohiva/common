@@ -10,34 +10,43 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\io;
+namespace com\mohiva\test\common\io\helpers;
 
 /**
- * Interface to be implemented by objects that can load classes.
+ * Test suite for the Mohiva Common project.
  * 
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-interface ClassLoader {
+class AllTests extends \PHPUnit_Framework_TestSuite {
 	
 	/**
-	 * Loads the given class.
-	 * 
-	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return 
-	 * is disabled.
-	 * 
-	 * @throws ClassNotFoundException if the class cannot be found.
+	 * Constructs the test suite handler.
 	 */
-	public function load($fqn);
+	public function __construct() {
+		
+		$this->setName(__CLASS__);
+		$this->addTestSuite(__NAMESPACE__ . '\ClassNameValidatorTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ClassToFileNameTransformerTest');
+	}
+	
+	/**
+	 * Creates the suite.
+	 * 
+	 * @return AllTests The test suite.
+	 */
+	public static function suite() {
+		
+		return new self();
+	}
 }

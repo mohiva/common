@@ -54,7 +54,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 		
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
-		$class = $loader->loadClass(self::TEST_CLASS);
+		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 		
@@ -73,7 +73,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 		
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
-		$class = $loader->loadClass(self::TEST_CLASS);
+		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 		
@@ -92,7 +92,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 		
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
-		$class = $loader->loadClass(self::TEST_CLASS);
+		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 		
@@ -111,7 +111,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 		
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
-		$class = $loader->loadClass(self::TEST_CLASS);
+		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 		

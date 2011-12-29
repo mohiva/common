@@ -18,6 +18,8 @@
  */
 namespace com\mohiva\common\io\exceptions;
 
+use com\mohiva\common\exceptions\SecurityException;
+
 /**
  * Signals that a name is malformed. This means it contains illegal characters.
  * 
@@ -28,4 +30,4 @@ namespace com\mohiva\common\io\exceptions;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class MalformedNameException extends \Exception {}
+class MalformedNameException extends SecurityException {}

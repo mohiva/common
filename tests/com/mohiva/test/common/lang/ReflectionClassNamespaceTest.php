@@ -21,6 +21,7 @@ namespace com\mohiva\test\common\lang;
 use ReflectionClass;
 use com\mohiva\test\common\Bootstrap;
 use com\mohiva\common\lang\ReflectionClassNamespace;
+use com\mohiva\common\io\DefaultClassLoader;
 use com\mohiva\common\io\IncludePath;
 
 /**
@@ -82,6 +83,9 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	 * Test if can get use statements from a class without namespaces.
 	 */
 	public function testClassWithoutNamespace() {
+		
+		$classLoader = new DefaultClassLoader();
+		$classLoader->load('ClassWithoutNamespace');
 		
 		$expected = array('ReflectionClass' => 'com\mohiva\common\lang\ReflectionClass');
 		$class = new ReflectionClass('ClassWithoutNamespace');
@@ -234,12 +238,15 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGlobalNamespacesPerFileWithClassAsFirst() {
 		
+		$className = 'GlobalNamespacesPerFileWithClassAsFirst';
+		$classLoader = new DefaultClassLoader();
+		$classLoader->load($className);
+		
 		$expected = array(
 			'Class1' => 'com\mohiva\common\lang\ReflectionClass',
 			'Class2' => 'com\mohiva\common\lang\ReflectionProperty',
 			'Class3' => 'com\mohiva\common\lang\ReflectionMethod'
 		);
-		$className = 'GlobalNamespacesPerFileWithClassAsFirst';
 		$class = new ReflectionClass($className);
 		$ns = new ReflectionClassNamespace($class);
 		
@@ -252,12 +259,15 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGlobalNamespacesPerFileWithClassAsLast() {
 		
+		$className = 'GlobalNamespacesPerFileWithClassAsLast';
+		$classLoader = new DefaultClassLoader();
+		$classLoader->load($className);
 		$expected = array(
 			'Class4' => 'com\mohiva\common\lang\ReflectionClass',
 			'Class5' => 'com\mohiva\common\lang\ReflectionProperty',
 			'Class6' => 'com\mohiva\common\lang\ReflectionMethod'
 		);
-		$className = 'GlobalNamespacesPerFileWithClassAsLast';
+		
 		$class = new ReflectionClass($className);
 		$ns = new ReflectionClassNamespace($class);
 		
