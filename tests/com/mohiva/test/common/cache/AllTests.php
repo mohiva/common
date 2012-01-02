@@ -38,7 +38,7 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 		$this->setName(__CLASS__);
 		$this->addTest(adapters\AllTests::suite());
 		$this->addTest(containers\AllTests::suite());
-		$this->addTestSuite('\com\mohiva\test\common\cache\HashKeyTest');
+		$this->addTestSuite(__NAMESPACE__ . '\HashKeyTest');
 	}
 	
 	/**

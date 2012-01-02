@@ -37,15 +37,15 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 		
 		$this->setName(__CLASS__);
 		$this->addTest(helpers\AllTests::suite());
-		$this->addTestSuite('\com\mohiva\test\common\io\IncludePathTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\ClassAutoloaderTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\DefaultClassLoaderTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\DefaultResourceLoaderTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\FileResourceTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\TempFileResourceTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\ResourceStatisticsTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\FilesystemResourceContainerTest');
-		$this->addTestSuite('\com\mohiva\test\common\io\TempResourceContainerTest');
+		$this->addTestSuite(__NAMESPACE__ . '\IncludePathTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ClassAutoloaderTest');
+		$this->addTestSuite(__NAMESPACE__ . '\DefaultClassLoaderTest');
+		$this->addTestSuite(__NAMESPACE__ . '\DefaultResourceLoaderTest');
+		$this->addTestSuite(__NAMESPACE__ . '\FileResourceTest');
+		$this->addTestSuite(__NAMESPACE__ . '\TempFileResourceTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ResourceStatisticsTest');
+		$this->addTestSuite(__NAMESPACE__ . '\FilesystemResourceContainerTest');
+		$this->addTestSuite(__NAMESPACE__ . '\TempResourceContainerTest');
 	}
 	
 	/**

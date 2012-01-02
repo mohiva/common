@@ -36,8 +36,8 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		$this->setName(__CLASS__);
-		$this->addTestSuite('\com\mohiva\test\common\cache\adapters\APCAdapterTest');
-		$this->addTestSuite('\com\mohiva\test\common\cache\adapters\ResourceAdapterTest');
+		$this->addTestSuite(__NAMESPACE__ . '\APCAdapterTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ResourceAdapterTest');
 	}
 	
 	/**

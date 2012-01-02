@@ -36,7 +36,7 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		$this->setName(__CLASS__);
-		$this->addTestSuite('\com\mohiva\test\common\crypto\HashTest');
+		$this->addTestSuite(__NAMESPACE__ . '\HashTest');
 	}
 	
 	/**

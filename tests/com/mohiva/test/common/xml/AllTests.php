@@ -36,9 +36,9 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		$this->setName(__CLASS__);
-		$this->addTestSuite('\com\mohiva\test\common\xml\XMLDocumentTest');
-		$this->addTestSuite('\com\mohiva\test\common\xml\XMLElementTest');
-		$this->addTestSuite('\com\mohiva\test\common\xml\XMLAttributeTest');
+		$this->addTestSuite(__NAMESPACE__ . '\XMLDocumentTest');
+		$this->addTestSuite(__NAMESPACE__ . '\XMLElementTest');
+		$this->addTestSuite(__NAMESPACE__ . '\XMLAttributeTest');
 	}
 	
 	/**

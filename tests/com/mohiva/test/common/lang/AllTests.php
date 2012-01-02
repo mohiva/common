@@ -36,16 +36,16 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 	public function __construct() {
 		
 		$this->setName(__CLASS__);
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionClassTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionClassNamespaceTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionDocCommentTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionMethodTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionObjectTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\ReflectionPropertyTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\AnnotationLexerTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\AnnotationContextTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\AnnotationParserTest');
-		$this->addTestSuite('\com\mohiva\test\common\lang\AnnotationListTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionClassTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionClassNamespaceTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionDocCommentTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionMethodTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionObjectTest');
+		$this->addTestSuite(__NAMESPACE__ . '\ReflectionPropertyTest');
+		$this->addTestSuite(__NAMESPACE__ . '\AnnotationLexerTest');
+		$this->addTestSuite(__NAMESPACE__ . '\AnnotationContextTest');
+		$this->addTestSuite(__NAMESPACE__ . '\AnnotationParserTest');
+		$this->addTestSuite(__NAMESPACE__ . '\AnnotationListTest');
 	}
 	
 	/**
