@@ -12,7 +12,7 @@
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
@@ -44,7 +44,7 @@ use PHPUnit_Framework_Constraint_IsType as PHPUnitType;
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  * TODO Test the AnnotationParser direct instead of using the reflection classes

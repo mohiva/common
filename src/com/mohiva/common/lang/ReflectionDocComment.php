@@ -12,7 +12,7 @@
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Lang
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
@@ -28,7 +28,7 @@ use com\mohiva\common\cache\containers\AnnotationContainer;
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Util
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */

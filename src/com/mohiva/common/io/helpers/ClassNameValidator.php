@@ -12,7 +12,7 @@
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Helper
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
@@ -24,7 +24,7 @@ namespace com\mohiva\common\io\helpers;
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Helper
  * @author    Christian Kaps <christian.kaps@mohiva.com>
- * @copyright Copyright (c) 2007-2011 Christian Kaps (http://www.mohiva.com)
+ * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
