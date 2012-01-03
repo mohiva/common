@@ -212,7 +212,7 @@ class TokenStream implements Iterator, Countable {
 		if (in_array($this->current()->getCode(), $tokenCodes)) {
 			return true;
 		} else if ($errorHandler) {
-			$errorHandler($tokenCodes, $this->current()->getCode());
+			$errorHandler($tokenCodes, $this->current());
 		}
 		
 		return false;
