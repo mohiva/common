@@ -237,8 +237,9 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase {
 		
 		$expected = array(self::T_COLON);
 		$stream->expect($expected, function(array $tokens, $current) use ($expected) {
+			/* @var \com\mohiva\common\parser\Token $current */
 			$this->assertSame($expected, $tokens);
-			$this->assertSame(self::T_NAME, $current);
+			$this->assertSame(self::T_NAME, $current->getCode());
 		});
 	}
 	
