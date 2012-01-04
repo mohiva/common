@@ -19,6 +19,7 @@
 namespace com\mohiva\test\common\parser;
 
 use SplDoublyLinkedList;
+use com\mohiva\common\parser\Token;
 use com\mohiva\common\parser\TokenStream;
 use com\mohiva\test\resources\common\parser\TestToken;
 
@@ -236,9 +237,7 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase {
 	public function testExpectExecutesClosure(TokenStream $stream) {
 		
 		$expected = array(self::T_COLON);
-		$stream->expect($expected, function(array $tokens, $current) use ($expected) {
-			/* @var \com\mohiva\common\parser\Token $current */
-			$this->assertSame($expected, $tokens);
+		$stream->expect($expected, function(Token $current) use ($expected) {
 			$this->assertSame(self::T_NAME, $current->getCode());
 		});
 	}

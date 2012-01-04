@@ -201,7 +201,7 @@ class TokenStream implements Iterator, Countable {
 	 * Check if one of the given token codes exists at the current position. 
 	 * 
 	 * If none of the token codes is the current token then this method executes the given 
-	 * closure and passes the token code list as first and the current token as second argument.
+	 * closure and passes the current token as argument.
 	 * 
 	 * @param array $tokenCodes A list of token codes to check for.
 	 * @param \Closure $errorHandler The function to call if none of the tokens codes is the current token.
@@ -212,7 +212,7 @@ class TokenStream implements Iterator, Countable {
 		if (in_array($this->current()->getCode(), $tokenCodes)) {
 			return true;
 		} else if ($errorHandler) {
-			$errorHandler($tokenCodes, $this->current());
+			$errorHandler($this->current());
 		}
 		
 		return false;
