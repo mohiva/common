@@ -229,6 +229,17 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	/**
+	 * Test if the `expect` method returns false if stream has reached the end.
+	 */
+	public function testExpectReturnsFalseAtStreamEnd() {
+		
+		$stream = new TokenStream();
+		$stream->push(new TestToken(self::T_NAME));
+		
+		$this->assertFalse($stream->expect(array(self::T_NAME)));
+	}
+	
+	/**
 	 * Test if the `expect` method executes the given closure if the given token isn't the current token.
 	 * 
 	 * @param \com\mohiva\common\parser\TokenStream $stream The token stream to use for this test.
