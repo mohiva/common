@@ -209,7 +209,7 @@ class TokenStream implements Iterator, Countable {
 	 */
 	public function expect(array $tokenCodes, \Closure $errorHandler = null) {
 		
-		if (in_array($this->current()->getCode(), $tokenCodes)) {
+		if ($this->valid() && in_array($this->current()->getCode(), $tokenCodes)) {
 			return true;
 		} else if ($errorHandler) {
 			$errorHandler($this->current());
