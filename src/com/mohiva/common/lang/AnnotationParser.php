@@ -20,7 +20,7 @@ namespace com\mohiva\common\lang;
 
 use stdClass;
 use Exception;
-use com\mohiva\common\parser\exceptions\SyntaxErrorException;
+use com\mohiva\common\exceptions\SyntaxErrorException;
 use com\mohiva\common\io\exceptions\ClassNotFoundException;
 use com\mohiva\common\lang\exceptions\UndefinedConstantException;
 use com\mohiva\common\lang\exceptions\UndefinedParameterException;

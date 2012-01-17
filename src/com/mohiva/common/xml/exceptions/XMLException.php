@@ -18,6 +18,8 @@
  */
 namespace com\mohiva\common\xml\exceptions;
 
+use com\mohiva\common\exceptions\MohivaException;
+
 /**
  * Indicate that an error occurs when modifying a XML document.
  * 
@@ -28,4 +30,4 @@ namespace com\mohiva\common\xml\exceptions;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class XMLException extends \Exception {}
+class XMLException extends \Exception implements MohivaException {}
