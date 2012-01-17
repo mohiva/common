@@ -30,11 +30,11 @@ use com\mohiva\test\resources\common\lang\annotations\NonParameter;
 use com\mohiva\test\resources\common\lang\annotations\ObjectValue;
 use com\mohiva\test\resources\common\lang\annotations\SingleParameter;
 use com\mohiva\test\resources\common\lang\annotations\Value;
+use com\mohiva\common\exceptions\SyntaxErrorException;
 use com\mohiva\common\lang\AnnotationParser;
 use com\mohiva\common\lang\ReflectionClass;
 use com\mohiva\common\lang\ReflectionProperty;
 use com\mohiva\common\lang\ReflectionMethod;
-use com\mohiva\common\parser\exceptions\SyntaxErrorException;
 use com\mohiva\common\lang\exceptions\UndefinedParameterValueException;
 use PHPUnit_Framework_Constraint_IsType as PHPUnitType;
 
@@ -105,7 +105,7 @@ class AnnotationParserTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Test if an exception will be thrown when defining an annotation with named and unnamed parameters.
 	 * 
-	 * @expectedException \com\mohiva\common\parser\exceptions\SyntaxErrorException
+	 * @expectedException \com\mohiva\common\exceptions\SyntaxErrorException
 	 */
 	public function testMixingNamedAndUnnamedParams() {
 		

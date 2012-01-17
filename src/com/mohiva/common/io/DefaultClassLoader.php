@@ -80,7 +80,7 @@ class DefaultClassLoader implements ClassLoader {
 		if (class_exists($fqn, false) || interface_exists($fqn, false)) {
 			return $this->returnRef ? new ReflectionClass($fqn) : null;
 		} else if (!$this->isValid($fqn)) {
-			/** @noinspection PhpIncludeInspection */
+			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once __DIR__ . '/../exceptions/SecurityException.php';
 			require_once 'exceptions/MalformedNameException.php';
 			throw new MalformedNameException("The class name `{$fqn}` contains illegal characters");
@@ -91,6 +91,7 @@ class DefaultClassLoader implements ClassLoader {
 			$fileName = $this->getClassFileFromIncludePath($fileName);
 			$this->loadClassFromFile($fqn, $fileName);
 		} catch (\Exception $e) {
+			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/IOException.php';
 			require_once 'exceptions/ClassNotFoundException.php';
 			throw new ClassNotFoundException("The class `{$fqn}` cannot be found", null, $e);
@@ -112,6 +113,7 @@ class DefaultClassLoader implements ClassLoader {
 		$includableFile = stream_resolve_include_path($fileName);
 		if ($includableFile === false) {
 			$includePath = get_include_path();
+			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/IOException.php';
 			require_once 'exceptions/FileNotFoundException.php';
 			throw new FileNotFoundException(
@@ -138,6 +140,7 @@ class DefaultClassLoader implements ClassLoader {
 		
 		// Check if the class or interface is declared
 		if (!class_exists($fqn, false) && !interface_exists($fqn, false)) {
+			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/MissingDeclarationException.php';
 			throw new MissingDeclarationException("Cannot find the class or interface `{$fqn}` in file `{$file}`");
 		}

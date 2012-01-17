@@ -18,6 +18,8 @@
  */
 namespace com\mohiva\common\io\exceptions;
 
+use com\mohiva\common\exceptions\MohivaException;
+
 /**
  * `IOException` is the superclass for all I/O exceptions.
  * 
@@ -28,4 +30,4 @@ namespace com\mohiva\common\io\exceptions;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class IOException extends \Exception {}
+class IOException extends \Exception implements MohivaException {}

@@ -10,24 +10,25 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/Lang/Annotations
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\lang\exceptions;
-
-use com\mohiva\common\exceptions\MohivaException;
+namespace com\mohiva\common\exceptions;
 
 /**
- * Signals that a parameter value isn't defined.
+ * Exception thrown if a value does not match with a set of values. Typically this happens 
+ * when a function calls another function and expects the return value to be of a certain 
+ * type or value not including arithmetic or buffer related errors.
  * 
  * @category  Mohiva/Common
- * @package   Mohiva/Common/Lang/Annotations
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
+ * @see       http://www.php.net/manual/en/class.unexpectedvalueexception.php
  */
-class UndefinedParameterValueException extends \Exception implements MohivaException {}
+class UnexpectedValueException extends \UnexpectedValueException implements MohivaException {}
