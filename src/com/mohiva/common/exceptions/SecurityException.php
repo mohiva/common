@@ -28,4 +28,4 @@ namespace com\mohiva\common\exceptions;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class SecurityException extends \Exception {}
+class SecurityException extends \Exception implements MohivaException {}

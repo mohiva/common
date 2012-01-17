@@ -10,24 +10,23 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/Parser/Exceptions
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\parser\exceptions;
-
-use RuntimeException;
+namespace com\mohiva\common\exceptions;
 
 /**
- * Signals that a syntax error occurred.
+ * Exception thrown if a callback refers to an undefined method or if some arguments are missing.
  * 
  * @category  Mohiva/Common
- * @package   Mohiva/Common/Parser/Exceptions
+ * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
+ * @see       http://www.php.net/manual/en/class.badmethodcallexception.php
  */
-class SyntaxErrorException extends RuntimeException {}
+class BadMethodCallException extends \BadMethodCallException implements MohivaException {}

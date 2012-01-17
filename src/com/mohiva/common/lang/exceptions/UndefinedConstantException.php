@@ -18,7 +18,7 @@
  */
 namespace com\mohiva\common\lang\exceptions;
 
-use RuntimeException;
+use com\mohiva\common\exceptions\MohivaException;
 
 /**
  * Signals that a constant isn't defined.
@@ -30,4 +30,4 @@ use RuntimeException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class UndefinedConstantException extends RuntimeException {}
+class UndefinedConstantException extends \Exception implements MohivaException {}
