@@ -22,7 +22,7 @@ use com\mohiva\common\exceptions\MohivaException;
 
 /**
  * Signals that a declaration isn't defined.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

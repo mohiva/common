@@ -30,7 +30,7 @@ use com\mohiva\common\cache\containers\AnnotationContainer;
 
 /**
  * Unit test case for the `AnnotationContainer` class.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -39,88 +39,88 @@ use com\mohiva\common\cache\containers\AnnotationContainer;
  * @link      https://github.com/mohiva/common
  */
 class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
-	
+
 	/**
 	 * The path to the class containing the annotations.
-	 * 
+	 *
 	 * @var string
 	 */
 	const TEST_CLASS = '\com\mohiva\test\resources\common\lang\AnnotationTest';
-	
+
 	/**
 	 * Test if can store an annotation list.
 	 */
 	public function testStoreAnnotationList() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
 		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
-		
+
 		$key = new HashKey(Hash::ALGO_SHA1, 'php://temp');
 		$adapter = new ResourceAdapter(new TempResourceContainer(TempFileResource::TYPE));
 		$container = new AnnotationContainer($adapter, $key);
 		$container->store($class->getDocComment(), $annotationList);
-		
+
 		$this->assertTrue($adapter->exists($key));
 	}
-	
+
 	/**
 	 * Test if a previous stored annotation list exists.
 	 */
 	public function testAnnotationListExists() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
 		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
-		
+
 		$key = new HashKey(Hash::ALGO_SHA1, 'php://temp');
 		$adapter = new ResourceAdapter(new TempResourceContainer(TempFileResource::TYPE));
 		$container = new AnnotationContainer($adapter, $key);
 		$container->store($class->getDocComment(), $annotationList);
-		
+
 		$this->assertTrue($container->exists($class->getDocComment()));
 	}
-	
+
 	/**
 	 * Test if can fetch a previous stored annotation list.
 	 */
 	public function testFetchAnnotationList() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
 		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
-		
+
 		$key = new HashKey(Hash::ALGO_SHA1, 'php://temp');
 		$adapter = new ResourceAdapter(new TempResourceContainer(TempFileResource::TYPE));
 		$container = new AnnotationContainer($adapter, $key);
 		$container->store($class->getDocComment(), $annotationList);
-		
+
 		$this->assertEquals($container->fetch($class->getDocComment()), $annotationList);
 	}
-	
+
 	/**
 	 * Test if can remove a previous stored annotation list.
 	 */
 	public function testRemoveAnnotationList() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
 		$loader = new DefaultClassLoader();
 		$class = $loader->load(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
-		
+
 		$key = new HashKey(Hash::ALGO_SHA1, 'php://temp');
 		$adapter = new ResourceAdapter(new TempResourceContainer(TempFileResource::TYPE));
 		$container = new AnnotationContainer($adapter, $key);
 		$container->store($class->getDocComment(), $annotationList);
 		$container->remove($class->getDocComment());
-		
+
 		$this->assertFalse($container->exists($class->getDocComment()));
 	}
 }

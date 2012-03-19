@@ -20,7 +20,7 @@ namespace com\mohiva\test\common\xml;
 
 /**
  * Test suite for the Mohiva Common project.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,25 +29,25 @@ namespace com\mohiva\test\common\xml;
  * @link      https://github.com/mohiva/common
  */
 class AllTests extends \PHPUnit_Framework_TestSuite {
-	
+
 	/**
 	 * Constructs the test suite handler.
 	 */
 	public function __construct() {
-		
+
 		$this->setName(__CLASS__);
 		$this->addTestSuite(__NAMESPACE__ . '\XMLDocumentTest');
 		$this->addTestSuite(__NAMESPACE__ . '\XMLElementTest');
 		$this->addTestSuite(__NAMESPACE__ . '\XMLAttributeTest');
 	}
-	
+
 	/**
 	 * Creates the suite.
-	 * 
+	 *
 	 * @return AllTests The test suite.
 	 */
 	public static function suite() {
-		
+
 		return new self();
 	}
 }

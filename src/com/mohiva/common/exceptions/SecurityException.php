@@ -20,7 +20,7 @@ namespace com\mohiva\common\exceptions;
 
 /**
  * `SecurityException` is the superclass for all security related exceptions.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

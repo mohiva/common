@@ -22,7 +22,7 @@ use com\mohiva\common\exceptions\MohivaException;
 
 /**
  * Signals that a parameter isn't defined.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Lang/Annotations
  * @author    Christian Kaps <christian.kaps@mohiva.com>

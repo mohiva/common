@@ -22,7 +22,7 @@ use com\mohiva\common\util\Event;
 
 /**
  * An event that signals the change of resource statistics.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Events
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -31,7 +31,7 @@ use com\mohiva\common\util\Event;
  * @link      https://github.com/mohiva/common
  */
 class ResourceStatisticsChangeEvent extends Event {
-	
+
 	const CREATION_TIME_CHANGED     = 'onCreationTimeChanged';
 	const ACCESS_TIME_CHANGED       = 'onAccessTimeChanged';
 	const MODIFICATION_TIME_CHANGED = 'onModificationTimeChanged';

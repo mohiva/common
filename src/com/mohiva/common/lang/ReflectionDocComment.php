@@ -22,9 +22,9 @@ use com\mohiva\common\parser\TokenStream;
 use com\mohiva\common\cache\containers\AnnotationContainer;
 
 /**
- * The `ReflectionDocComment` class reports information about a doc comment 
+ * The `ReflectionDocComment` class reports information about a doc comment
  * containing DocBlock annotations.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Util
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -33,22 +33,22 @@ use com\mohiva\common\cache\containers\AnnotationContainer;
  * @link      https://github.com/mohiva/common
  */
 class ReflectionDocComment {
-	
+
 	/**
 	 * @var \com\mohiva\common\cache\containers\AnnotationContainer
 	 */
 	private static $cacheContainer = null;
-	
-	/** 
+
+	/**
 	 * @var \com\mohiva\common\lang\AnnotationReflector
 	 */
 	private $reflector = null;
-	
+
 	/**
 	 * @var \com\mohiva\common\lang\AnnotationList
 	 */
 	private $annotations = null;
-	
+
 	/**
 	 * @var array
 	 */
@@ -84,7 +84,7 @@ class ReflectionDocComment {
 		"@var\\s",
 		"@version\\s"
 	);
-	
+
 	/**
 	 * @var array
 	 */
@@ -98,70 +98,70 @@ class ReflectionDocComment {
 		'{@toc}',
 		'{@tutorial}'
 	);
-	
+
 	/**
 	 * Set the cache container used to cache annotations.
-	 * 
+	 *
 	 * @param \com\mohiva\common\cache\containers\AnnotationContainer $container
 	 */
 	public static function setCacheContainer(AnnotationContainer $container) {
-		
+
 		self::$cacheContainer = $container;
 	}
-	
+
 	/**
 	 * The class constructor.
-	 * 
+	 *
 	 * @param AnnotationReflector $reflector
 	 */
 	public function __construct(AnnotationReflector $reflector) {
-		
+
 		$this->reflector = $reflector;
 	}
-	
+
 	/**
 	 * Gets the list with all found annotations.
-	 * 
+	 *
 	 * @return AnnotationList
 	 */
 	public function getAnnotationList() {
-		
+
 		if ($this->annotations === null) {
 			$this->annotations = $this->parseAnnotations();
 		}
-		
+
 		return $this->annotations;
 	}
-	
-	/**  
+
+	/**
 	 * @return AnnotationList
 	 */
 	private function parseAnnotations() {
-		
+
 		$docComment = $this->reflector->getDocComment();
 		if (!$docComment) {
 			return new AnnotationList();
 		}
-		
+
 		$annotations = $this->getCachedAnnotations($docComment);
 		if ($annotations !== null) {
 			return $annotations;
 		}
-		
+
 		$docComment = $this->cleanDocComment($docComment);
 		$stream = $this->createTokenStream($docComment);
 		$context = $this->getAnnotationContext();
 		$parser = new AnnotationParser();
 		$annotations = $parser->parse($stream, $context);
-		
+
 		$this->cacheAnnotations($docComment, $annotations);
-		
+
 		return $annotations;
 	}
-	
+
 	/**
 	 * Remove registered annotations from comment.
-	 * 
+	 *
 	 * @param string $rawComment
 	 * @return string
 	 */
@@ -172,27 +172,27 @@ class ReflectionDocComment {
 		$cleanedComment = substr($cleanedComment, strpos($cleanedComment, '@'));
 		$cleanedComment = preg_replace('/^[\*\s]+/m', '', $cleanedComment);
 		$cleanedComment = trim($cleanedComment, '*/ ');
-		
+
 		return $cleanedComment;
 	}
-	
+
 	/**
-	 * @param string $docComment 
+	 * @param string $docComment
 	 * @return \com\mohiva\common\parser\TokenStream
 	 */
 	private function createTokenStream($docComment) {
-		
+
 		$lexer = new AnnotationLexer(new TokenStream());
 		$stream = $lexer->scan($docComment);
-		
+
 		return $stream;
 	}
-	
+
 	/**
 	 * @return AnnotationContext
 	 */
 	private function getAnnotationContext() {
-		
+
 		$namespace = $this->reflector->getNamespace();
 		$context = new AnnotationContext(
 			$namespace->getName(),
@@ -200,35 +200,35 @@ class ReflectionDocComment {
 			$this->reflector->getClassContext(),
 			$this->reflector->getParseContext()
 		);
-		
+
 		return $context;
 	}
-	
-	/** 
+
+	/**
 	 * @param string $docComment
 	 * @return AnnotationList
 	 */
 	private function getCachedAnnotations($docComment) {
-		
+
 		if (self::$cacheContainer === null) {
 			return null;
 		}
-		
+
 		$annotations = self::$cacheContainer->fetch($docComment);
-		
+
 		return $annotations;
 	}
-	
+
 	/**
 	 * @param string $docComment
 	 * @param AnnotationList $annotations
 	 */
 	private function cacheAnnotations($docComment, AnnotationList $annotations) {
-		
+
 		if (self::$cacheContainer === null) {
 			return;
 		}
-		
+
 		self::$cacheContainer->store($docComment, $annotations);
 	}
 }

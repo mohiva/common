@@ -9,12 +9,12 @@ namespace com\mohiva\test\resources\common\lang\foo {
 }
 
 namespace com\mohiva\test\resources\common\lang\reflection {
-	
+
 	// class NamespaceAndClassCommentedOut {}
 	use com\mohiva\common\lang\ReflectionClass as Class4, com\mohiva\common\lang\ReflectionProperty as Class5;
-	
+
 	// namespace com\mohiva\test\resources\common\lang\reflection;
 	use com\mohiva\common\lang\ReflectionMethod as Class6;
-	
+
 	class NamespaceAndClassCommentedOut {}
 }

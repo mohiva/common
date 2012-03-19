@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <context xmlns:mx="urn:com.mohiva.framework.xml.helpers">
-	
+
 	<books xmlns:custom="urn:com.mohiva.www.xml.files.helpers">
 		<book number="1">
 			<title>Blindsighted</title>
@@ -23,5 +23,5 @@
 			<price>14.83</price>
 		</book>
 	</books>
-	
+
 </context>

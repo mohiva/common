@@ -20,7 +20,7 @@ namespace com\mohiva\common\io\exceptions;
 
 /**
  * Signals that a file cannot be found on a specified path name.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

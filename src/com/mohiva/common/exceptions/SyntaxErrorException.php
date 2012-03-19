@@ -20,7 +20,7 @@ namespace com\mohiva\common\exceptions;
 
 /**
  * Signals that a syntax error occurred.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

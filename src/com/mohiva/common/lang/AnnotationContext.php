@@ -20,7 +20,7 @@ namespace com\mohiva\common\lang;
 
 /**
  * Contains information about the context of an annotation.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Lang
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,27 +29,27 @@ namespace com\mohiva\common\lang;
  * @link      https://github.com/mohiva/common
  */
 class AnnotationContext {
-	
+
 	/**
 	 * @var string
 	 */
 	private $namespace = null;
-	
+
 	/**
 	 * @var array
 	 */
 	private $useStatements = array();
-	
+
 	/**
 	 * @var string
 	 */
 	private $class = null;
-	
+
 	/**
 	 * @var string
 	 */
 	private $location = null;
-	
+
 	/**
 	 * @param string $namespace The namespace in which the annotation was found.
 	 * @param array $useStatements A list with use statements within the namespace.
@@ -57,42 +57,42 @@ class AnnotationContext {
 	 * @param string $location The name of the class, property or method on which the annotation was found.
 	 */
 	public function __construct($namespace, array $useStatements, $class, $location) {
-		
+
 		$this->namespace = $namespace;
 		$this->useStatements = $useStatements;
 		$this->class = $class;
 		$this->location = $location;
 	}
-	
+
 	/**
 	 * @return string The namespace in which the annotation was found.
 	 */
 	public function getNamespace() {
-		
+
 		return $this->namespace;
 	}
-	
+
 	/**
 	 * @return array A list with use statements within the namespace.
 	 */
 	public function getUseStatements() {
-		
+
 		return $this->useStatements;
 	}
-	
+
 	/**
 	 * @return string Relates to the fully qualified class name in which the annotation was found.
 	 */
 	public function getClass() {
-		
+
 		return $this->class;
 	}
-	
+
 	/**
 	 * @return string The name of the class, property or method on which the annotation was found.
 	 */
 	public function getLocation() {
-		
+
 		return $this->location;
 	}
 }

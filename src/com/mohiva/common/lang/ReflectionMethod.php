@@ -22,8 +22,8 @@ use ReflectionMethod as InternalReflectionMethod;
 use com\mohiva\common\cache\containers\AnnotationContainer;
 
 /**
- * The `ReflectionMethod` class reports information about a method. 
- * 
+ * The `ReflectionMethod` class reports information about a method.
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Util
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -32,67 +32,67 @@ use com\mohiva\common\cache\containers\AnnotationContainer;
  * @link      https://github.com/mohiva/common
  */
 class ReflectionMethod extends InternalReflectionMethod implements AnnotationReflector {
-	
+
 	/**
 	 * An instance of the `ReflectionDocComment` class.
-	 * 
+	 *
 	 * @var ReflectionDocComment
 	 */
 	private $docComment = null;
-	
+
 	/**
 	 * Gets declaring class for the reflected method.
-	 * 
-	 * @return ReflectionClass A `ReflectionClass` object of the class that the reflected 
+	 *
+	 * @return ReflectionClass A `ReflectionClass` object of the class that the reflected
 	 * method is part of.
 	 */
 	public function getDeclaringClass() {
-		
+
 		$class = parent::getDeclaringClass();
-		
+
 		return new ReflectionClass($class->getName());
 	}
-	
+
 	/**
 	 * Gets the method prototype (if there is one).
-	 * 
+	 *
 	 * @return A `ReflectionMethod` instance of the method prototype.
 	 * @throws ReflectionException if the method does not have a prototype.
 	 */
 	public function getPrototype() {
-		
+
 		/* @var \ReflectionMethod $prototype */
 		/* @var \ReflectionClass $class */
 		$prototype = parent::getPrototype();
 		$class = $prototype->getDeclaringClass();
-		
+
 		return new self($class->getName(), $prototype->getName());
 	}
-	
+
 	/**
 	 * Gets the annotation list.
-	 * 
+	 *
 	 * @return AnnotationList A list containing annotation instances.
 	 */
 	public function getAnnotationList() {
-		
+
 		if ($this->docComment == null) {
 			$this->docComment = new ReflectionDocComment($this);
 		}
-		
+
 		return $this->docComment->getAnnotationList();
 	}
-	
+
 	/**
 	 * Gets a `ReflectionClassNamespace` object.
-	 * 
+	 *
 	 * @return ReflectionClassNamespace A `ReflectionClassNamespace` object.
 	 */
 	public function getNamespace() {
-		
+
 		return new ReflectionClassNamespace($this->getDeclaringClass());
 	}
-	
+
 	/**
 	 * Gets the fully qualified class name for the class,
 	 * property or method on which the doc comment is located.
@@ -100,10 +100,10 @@ class ReflectionMethod extends InternalReflectionMethod implements AnnotationRef
 	 * @return string A fully qualified class name.
 	 */
 	public function getClassContext() {
-		
+
 		return parent::getDeclaringClass()->getName();
 	}
-	
+
 	/**
 	 * Gets the name of the class, property or method on which the
 	 * doc comment is located.
@@ -111,7 +111,7 @@ class ReflectionMethod extends InternalReflectionMethod implements AnnotationRef
 	 * @return string A class, property or method name.
 	 */
 	public function getParseContext() {
-		
+
 		return $this->getClassContext() . '::' . $this->getName() . '()';
 	}
 }
