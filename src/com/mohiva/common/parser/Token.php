@@ -20,7 +20,7 @@ namespace com\mohiva\common\parser;
 
 /**
  * Token interface.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Parser
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,10 +29,10 @@ namespace com\mohiva\common\parser;
  * @link      https://github.com/mohiva/common
  */
 interface Token {
-	
+
 	/**
 	 * Returns the token code.
-	 * 
+	 *
 	 * @return int The token code.
 	 */
 	public function getCode();

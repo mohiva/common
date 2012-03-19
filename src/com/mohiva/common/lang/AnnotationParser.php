@@ -29,7 +29,7 @@ use com\mohiva\common\parser\TokenStream;
 
 /**
  * Parse a string containing DocBlock annotations to annotation objects.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Util
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -38,22 +38,22 @@ use com\mohiva\common\parser\TokenStream;
  * @link      https://github.com/mohiva/common
  */
 class AnnotationParser {
-	
+
 	/**
 	 * @var string
 	 */
 	const NS_SEPARATOR = '\\';
-	
+
 	/**
 	 * @var \com\mohiva\common\parser\TokenStream
 	 */
 	private $stream = null;
-	
+
 	/**
 	 * @var AnnotationContext
 	 */
 	private $context = null;
-	
+
 	/**
 	 * Parse the token stream to annotation objects.
 	 *
@@ -62,60 +62,60 @@ class AnnotationParser {
 	 * @return \com\mohiva\common\lang\AnnotationList A list containing the found annotation instances.
 	 */
 	public function parse(TokenStream $stream, AnnotationContext $context) {
-		
+
 		$this->stream = $stream;
 		$this->context = $context;
-		
+
 		return $this->getAnnotations();
 	}
-	
+
 	/**
 	 * Create annotations from the tokenized input string.
-	 * 
+	 *
 	 * @return AnnotationList A list of annotation instances or an empty list if no annotation was found.
 	 */
 	private function getAnnotations() {
-		
+
 		$annotations = new AnnotationList(array());
 		while (($annotation = $this->getAnnotation()) !== null) {
 			$annotations->addAnnotation($annotation);
 		}
-		
+
 		return $annotations;
 	}
-	
+
 	/**
 	 * Get an instance of an annotation.
-	 * 
+	 *
 	 * @return \com\mohiva\common\lang\annotations\Annotation An instance of an annotation.
 	 */
 	private function getAnnotation() {
-		
+
 		$valid = $this->stream->moveTo(AnnotationLexer::T_IDENTIFIER);
 		if (!$valid) {
 			return null;
 		}
-		
+
 		$name = $this->getName();
 		if ($this->stream->isNext(AnnotationLexer::T_OPEN_PARENTHESIS)) {
 			$params = $this->getParams();
 		} else {
 			$params = array();
 		}
-		
+
 		return $this->getAnnotationInstance($name, $params);
 	}
-	
+
 	/**
 	 * Create an instance of the given annotation and construct it with the params.
-	 * 
+	 *
 	 * @param string $annotationName The name of the annotation.
 	 * @param array $annotationParams The params for the annotation.
 	 * @return \com\mohiva\common\lang\annotations\Annotation An annotation instance.
 	 * @throws \com\mohiva\common\io\exceptions\ClassNotFoundException if the annotation class cannot be found.
 	 */
 	private function getAnnotationInstance($annotationName, array $annotationParams) {
-		
+
 		try {
 			$class = new ReflectionClass($annotationName);
 		} catch (ClassNotFoundException $e) {
@@ -123,7 +123,7 @@ class AnnotationParser {
 			$message .= "called in DocBlock for: {$this->context->getLocation()}; ";
 			throw new ClassNotFoundException($message, null, $e);
 		}
-		
+
 		// Get all method params
 		$methodParams = array();
 		$methodDefaultValues = array();
@@ -140,7 +140,7 @@ class AnnotationParser {
 				$methodParams[$paramName] = null;
 			}
 		}
-		
+
 		// Instantiate the class
 		$methodName = array_key_exists(0, $annotationParams) ? 'Unnamed' : 'Named';
 		$instance = $class->newInstanceArgs(
@@ -151,16 +151,16 @@ class AnnotationParser {
 				$annotationParams
 			)
 		);
-		
+
 		return $instance;
 	}
-	
+
 	/**
-	 * Get an array with all named instance parameters. When using named 
-	 * parameters, all params excepting params which have default values, 
-	 * must be defined in the annotation. It is also not allowed to 
+	 * Get an array with all named instance parameters. When using named
+	 * parameters, all params excepting params which have default values,
+	 * must be defined in the annotation. It is also not allowed to
 	 * define more params as expected in the constructor definition.
-	 * 
+	 *
 	 * @param string $className The name of the annotation class.
 	 * @param array $methodParams An array containing all parameters defined in the class constructor.
 	 * @param array $methodDefaultValues An array containing all default values defined in the class constructor.
@@ -174,7 +174,7 @@ class AnnotationParser {
 		array $methodParams,
 		array $methodDefaultValues,
 		array $annotationParams) {
-		
+
 		$instanceParams = array();
 		$params = array_merge($methodParams, $annotationParams);
 		foreach ($params as $paramName => $paramValue) {
@@ -191,17 +191,17 @@ class AnnotationParser {
 					"Missing value for param `{$paramName}`, defined in class `{$className}`"
 				);
 			}
-			
+
 			$instanceParams[] = $paramValue;
 		}
-		
+
 		return $instanceParams;
 	}
-	
+
 	/**
-	 * Get an array with all unnamed instance parameters. Unnamed 
+	 * Get an array with all unnamed instance parameters. Unnamed
 	 * parameters uses the same behaviour as PHP functions.
-	 * 
+	 *
 	 * @param string $className The name of the annotation class.
 	 * @param array $methodParams An array containing all parameters defined in the class constructor.
 	 * @param array $methodDefaultValues An array containing all default values defined in the class constructor.
@@ -214,7 +214,7 @@ class AnnotationParser {
 		array $methodParams,
 		array $methodDefaultValues,
 		array $annotationParams) {
-		
+
 		$paramKey = 0;
 		$instanceParams = array();
 		foreach (array_keys($methodParams) as $paramName) {
@@ -225,23 +225,23 @@ class AnnotationParser {
 					"Missing value for param `{$paramName}`, defined in class `{$className}`"
 				);
 			}
-			
+
 			$instanceParams[] = $paramValueExists ? $annotationParams[$paramKey] : $methodDefaultValues[$paramName];
 			$paramKey++;
 		}
-		
+
 		$instanceParams = array_merge($instanceParams, $annotationParams);
-		
+
 		return $instanceParams;
 	}
-	
+
 	/**
 	 * Get the fully qualified name of an annotation.
-	 * 
+	 *
 	 * @return string The fully qualified name of an annotation.
 	 */
 	private function getName() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationToken $token */
 		if ($this->stream->isNext(AnnotationLexer::T_NS_SEPARATOR)) {
 			$token = $this->next(AnnotationLexer::T_NS_SEPARATOR);
@@ -249,7 +249,7 @@ class AnnotationParser {
 		} else {
 			$name = '';
 		}
-		
+
 		$token = $this->next(AnnotationLexer::T_NAME);
 		$name .= $token->getValue();
 		while ($this->stream->isNext(AnnotationLexer::T_NS_SEPARATOR)) {
@@ -258,33 +258,33 @@ class AnnotationParser {
 			$token = $this->next(AnnotationLexer::T_NAME);
 			$name .= $separator->getValue() . $token->getValue();
 		}
-		
+
 		$name = $this->getFullyQualifiedName($name);
-		
+
 		return $name;
 	}
-	
+
 	/**
 	 * Parse all params for an annotation.
-	 * 
+	 *
 	 * @return array The params for an annotation.
 	 * @throws SyntaxErrorException if named and unnamed parameters are mixed.
 	 */
 	private function getParams() {
-		
+
 		$first = true;
 		$params = array();
-		
+
 		$this->next(AnnotationLexer::T_OPEN_PARENTHESIS);
 		if ($this->stream->isNext(AnnotationLexer::T_CLOSE_PARENTHESIS)) {
 			$first = false;
 		}
-		
+
 		$firstType = null;
 		$currentType = null;
 		while ($first || $this->stream->isNext(AnnotationLexer::T_COMMA)) {
-			if (!$first) $this->next(AnnotationLexer::T_COMMA);			
-			
+			if (!$first) $this->next(AnnotationLexer::T_COMMA);
+
 			$first = false;
 			$param = $this->getKeyValuePair(AnnotationLexer::T_NAME, AnnotationLexer::T_EQUAL);
 			if (array_key_exists('key', $param)) {
@@ -292,7 +292,7 @@ class AnnotationParser {
 			} else {
 				$params[] = $param['value'];
 			}
-			
+
 			// Disallow mixing of named and unnamed parameters
 			$currentType = array_key_exists('key', $param) ? 1 : 2;
 			if ($firstType === null) $firstType = array_key_exists('key', $param) ? 1 : 2;
@@ -304,30 +304,30 @@ class AnnotationParser {
 				throw new SyntaxErrorException($message);
 			}
 		}
-		
+
 		$this->next(AnnotationLexer::T_CLOSE_PARENTHESIS);
-		
+
 		return $params;
 	}
-	
+
 	/**
 	 * Parse an annotation array in the form `[...]` to an array.
-	 * 
+	 *
 	 * @return array An array.
 	 */
 	private function getArray() {
-		
+
 		$first = true;
 		$array = array();
-		
+
 		$this->next(AnnotationLexer::T_OPEN_ARRAY);
 		if ($this->stream->isNext(AnnotationLexer::T_CLOSE_ARRAY)) {
 			$first = false;
 		}
-		
+
 		while ($first || $this->stream->isNext(AnnotationLexer::T_COMMA)) {
 			if (!$first) $this->next(AnnotationLexer::T_COMMA);
-			
+
 			$first = false;
 			$item = $this->getKeyValuePair(AnnotationLexer::T_VALUE, AnnotationLexer::T_COLON);
 			if (array_key_exists('key', $item)) {
@@ -336,53 +336,53 @@ class AnnotationParser {
 				$array[] = $item['value'];
 			}
 		}
-		
+
 		$this->next(AnnotationLexer::T_CLOSE_ARRAY);
-		
+
 		return $array;
 	}
-	
+
 	/**
-	 * Parse an annotation object in the form `{...}` to an 
+	 * Parse an annotation object in the form `{...}` to an
 	 * object of the type `stdClass`.
-	 * 
+	 *
 	 * @return stdClass An object of type `stdClass`.
 	 */
 	private function getObject() {
-		
+
 		$first = true;
 		$object = new stdClass();
-		
+
 		$this->next(AnnotationLexer::T_OPEN_OBJECT);
 		if ($this->stream->isNext(AnnotationLexer::T_CLOSE_OBJECT)) {
 			$first = false;
 		}
-		
+
 		while ($first || $this->stream->isNext(AnnotationLexer::T_COMMA)) {
 			if (!$first) $this->next(AnnotationLexer::T_COMMA);
-			
+
 			$first = false;
 			$item = $this->getKeyValuePair(AnnotationLexer::T_NAME, AnnotationLexer::T_COLON, true);
 			$object->{$item['key']} = $item['value'];
 		}
-		
+
 		$this->next(AnnotationLexer::T_CLOSE_OBJECT);
-		
+
 		return $object;
 	}
-	
+
 	/**
 	 * Parse a key => value pair from an annotation.
-	 * 
+	 *
 	 * @param int $keyToken The token which matches the key.
 	 * @param int $assignmentToken The token which matches the assignment character.
 	 * @param boolean $needKey Indicates if a key is needed or not.
 	 * @return array If a key exists then an array with a key and value, otherwise an array with only a value.
 	 */
 	private function getKeyValuePair($keyToken, $assignmentToken, $needKey = false) {
-		
+
 		$item = array();
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationToken $token */
 		if ($needKey == true || $this->stream->isNext($assignmentToken, 2)) {
 			if ($keyToken === AnnotationLexer::T_VALUE) {
@@ -391,10 +391,10 @@ class AnnotationParser {
 				$token = $this->next($keyToken);
 				$item['key'] = $token->getValue();
 			}
-			
+
 			$this->next($assignmentToken);
 		}
-		
+
 		// Get the value token
 		if ($this->stream->isNext(AnnotationLexer::T_IDENTIFIER)) {
 			$item['value'] = $this->getAnnotation();
@@ -407,7 +407,7 @@ class AnnotationParser {
 		} else if ($this->stream->isNext(AnnotationLexer::T_NAME) || (
 			$this->stream->isNext(AnnotationLexer::T_NS_SEPARATOR) &&
 			$this->stream->isNext(AnnotationLexer::T_NAME, 2))) {
-			
+
 			$item['value'] = $this->getConstant();
 		} else {
 			/* @var \com\mohiva\common\lang\AnnotationToken $token */
@@ -421,17 +421,17 @@ class AnnotationParser {
 				AnnotationLexer::T_NS_SEPARATOR
 			), $token);
 		}
-		
+
 		return $item;
 	}
-	
+
 	/**
 	 * Get the value from the current token position and cast it to its type.
-	 * 
+	 *
 	 * @return mixed The value cast to its type.
 	 */
 	private function getValue() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationToken $token */
 		$token = $this->next(AnnotationLexer::T_VALUE);
 		$value = $token->getValue();
@@ -452,19 +452,19 @@ class AnnotationParser {
 			$value = substr(substr($value, 1), 0, -1);
 			$value = preg_replace("/\\\\(')/", '$1', $value);
 		}
-		
+
 		return $value;
 	}
-	
+
 	/**
 	 * Returns the value of a constant.
-	 * 
+	 *
 	 * @return mixed The value of the constant.
 	 * @throws ClassConstantNotFoundException if the constant is a class constant and if this class cannot be found.
 	 * @throws UndefinedConstantExceptions if the constant isn't defined.
 	 */
 	private function getConstant() {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationToken $token */
 		if ($this->stream->isNext(AnnotationLexer::T_NS_SEPARATOR)) {
 			$token = $this->next(AnnotationLexer::T_NS_SEPARATOR);
@@ -472,7 +472,7 @@ class AnnotationParser {
 		} else {
 			$constant = '';
 		}
-		
+
 		$token = $this->next(AnnotationLexer::T_NAME);
 		$constant .= $token->getValue();
 		while ($this->stream->isNext(AnnotationLexer::T_NS_SEPARATOR)) {
@@ -481,7 +481,7 @@ class AnnotationParser {
 			$token = $this->next(AnnotationLexer::T_NAME);
 			$constant .= $token->getValue();
 		}
-		
+
 		// Get a class constant
 		$colon = $this->stream->isNext(AnnotationLexer::T_DOUBLE_COLON);
 		if ($colon && $constant == 'self') {
@@ -497,7 +497,7 @@ class AnnotationParser {
 			$token = $this->next(AnnotationLexer::T_NAME);
 			$constant .= $token->getValue();
 		}
-		
+
 		try {
 			return constant($constant);
 		} catch (ClassNotFoundException $e) {
@@ -514,41 +514,41 @@ class AnnotationParser {
 			throw new UndefinedConstantException($message, null, $e);
 		}
 	}
-	
+
 	/**
-	 * When the given token is the next token then move 
+	 * When the given token is the next token then move
 	 * to it, otherwise throw a syntax error exception.
-	 * 
+	 *
 	 * @param int $token The token code to check.
 	 * @return AnnotationToken The next token.
 	 */
 	private function next($token) {
-		
+
 		/* @var \com\mohiva\common\lang\AnnotationToken $lookahead */
 		$lookahead = $this->stream->getLookahead();
 		if (($lookahead && $lookahead->getCode() !== $token) || !$lookahead) {
 			$this->syntaxError(array($token), $lookahead);
 		}
-		
+
 		$this->stream->next();
-		
+
 		return $this->stream->current();
 	}
-	
+
 	/**
-	 * Use the internal PHP namespace resolution order to 
+	 * Use the internal PHP namespace resolution order to
 	 * resolve the FQN for the given name.
-	 * 
+	 *
 	 * @param string $name The name to resolve.
 	 * @return string The fully qualified name.
 	 */
 	private function getFullyQualifiedName($name) {
-		
+
 		$name = rtrim($name, self::NS_SEPARATOR);
 		$pos = strpos($name, self::NS_SEPARATOR);
 		$nsAlias = substr($name, 0, $pos);
 		$useStatements = $this->context->getUseStatements();
-		
+
 		// Try to find the FQN for the annotation
 		if ($pos === 0) {
 			// Given name is an FQN
@@ -566,19 +566,19 @@ class AnnotationParser {
 			$namespace = trim($this->context->getNamespace(), self::NS_SEPARATOR);
 			$fqn = $namespace . self::NS_SEPARATOR . $name;
 		}
-		
+
 		return $fqn;
 	}
-	
+
 	/**
 	 * Throw a syntax error exception.
-	 * 
+	 *
 	 * @param array $tokens A list with expected tokens.
 	 * @param AnnotationToken $lookahead The lookahead token.
 	 * @throws SyntaxErrorException if a syntax error occurs.
 	 */
 	private function syntaxError(array $tokens, AnnotationToken $lookahead = null) {
-		
+
 		$refObject = new ReflectionClass(__NAMESPACE__ . '\AnnotationLexer');
 		$tokens = array_map(array($refObject, 'getConstantByValue'), $tokens);
 		$tokens = implode('`,`', $tokens);
@@ -591,7 +591,7 @@ class AnnotationParser {
 			$message .= "expected tokens: `{$tokens}` but found `{$lookahead->getValue()}` ";
 			$message .= "at offset `{$lookahead->getOffset()}` near: `{$snippet}`";
 		}
-		
+
 		throw new SyntaxErrorException($message);
 	}
 }

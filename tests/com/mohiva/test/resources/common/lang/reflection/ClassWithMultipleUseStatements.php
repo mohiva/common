@@ -6,9 +6,9 @@ use com\mohiva\common\lang\ReflectionClass, com\mohiva\common\lang\ReflectionPro
 use com\mohiva\common\lang\ReflectionMethod;
 
 class ClassWithMultipleUseStatements {
-	
+
 	public $foo = null;
-	
+
 	public function foo() {}
 }
 

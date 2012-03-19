@@ -68,7 +68,7 @@ interface EventDispatcher {
 	 * to this method has no effect.
 	 *
 	 * @param string $type The type of event.
-	 * @param callable  $listener The listener object to remove.
+	 * @param callable $listener The listener object to remove.
 	 */
 	public function removeEventListener($type, callable $listener);
 

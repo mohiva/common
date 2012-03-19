@@ -20,7 +20,7 @@ namespace com\mohiva\common\exceptions;
 
 /**
  * Exception thrown if a callback refers to an undefined method or if some arguments are missing.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

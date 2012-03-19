@@ -20,9 +20,9 @@ namespace com\mohiva\common\xml;
 
 /**
  * Provides an SimpleXML like api on top of the DOMNodeList implementation.
- * 
+ *
  * This class is not supported yet. Please vote for Bug http://bugs.php.net/bug.php?id=48352.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/XML
  * @author    Christian Kaps <christian.kaps@mohiva.com>

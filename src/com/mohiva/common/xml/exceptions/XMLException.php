@@ -22,7 +22,7 @@ use com\mohiva\common\exceptions\MohivaException;
 
 /**
  * Indicate that an error occurs when modifying a XML document.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/XML/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

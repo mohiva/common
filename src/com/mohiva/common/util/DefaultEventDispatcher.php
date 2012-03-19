@@ -48,25 +48,25 @@ class DefaultEventDispatcher implements EventDispatcher {
 	 */
 	private $listeners = array();
 
-    /**
-     * Registers an event listener object with an `EventDispatcher` object so
-     * that the listener receives notification of an event.
-     *
-     * After you successfully register an event listener, you cannot change its priority
-     * through additional calls to `addEventListener()`. To change a listener's
-     * priority, you must first call `removeEventListener()`. Then you can register
-     * the listener again with the new priority level.
-     *
-     * @param string $type The type of event.
-     *
-     * @param callable $listener The listener function that processes the event. This function
-     * must accept an event object as its only parameter and must return nothing.
-     *
-     * @param int $priority The priority level of the event listener. The higher the number,
-     * the higher the priority. All listeners with priority n are processed before listeners
-     * of priority n-1. If two or more listeners share the same priority, they are processed
-     * in the order in which they were added. The default priority is 0.
-     */
+	/**
+	 * Registers an event listener object with an `EventDispatcher` object so
+	 * that the listener receives notification of an event.
+	 *
+	 * After you successfully register an event listener, you cannot change its priority
+	 * through additional calls to `addEventListener()`. To change a listener's
+	 * priority, you must first call `removeEventListener()`. Then you can register
+	 * the listener again with the new priority level.
+	 *
+	 * @param string $type The type of event.
+	 *
+	 * @param callable $listener The listener function that processes the event. This function
+	 * must accept an event object as its only parameter and must return nothing.
+	 *
+	 * @param int $priority The priority level of the event listener. The higher the number,
+	 * the higher the priority. All listeners with priority n are processed before listeners
+	 * of priority n-1. If two or more listeners share the same priority, they are processed
+	 * in the order in which they were added. The default priority is 0.
+	 */
 	public function addEventListener($type, callable $listener, $priority = 0) {
 
 		if (!isset($this->listeners[$type])) {

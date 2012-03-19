@@ -20,7 +20,7 @@ namespace com\mohiva\common\xml;
 
 /**
  * Provides an SimpleXML like api on top  of the DOMAttr implementation.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/XML
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,24 +29,24 @@ namespace com\mohiva\common\xml;
  * @link      https://github.com/mohiva/common
  */
 class XMLAttribute extends \DOMAttr {
-	
+
 	/**
 	 * Return the value as string.
-	 * 
+	 *
 	 * @return string The attribute value casted as string.
 	 */
 	public function __toString() {
-		
+
 		return $this->toString();
 	}
-	
+
 	/**
 	 * Return the value as boolean.
-	 * 
+	 *
 	 * @return bool The attribute value casted as boolean.
 	 */
 	public function toBool() {
-		
+
 		if ($this->value === 'true') {
 			return true;
 		} else if ($this->value === 'false') {
@@ -55,34 +55,34 @@ class XMLAttribute extends \DOMAttr {
 			return (bool) $this->value;
 		}
 	}
-	
+
 	/**
 	 * Return the value as int.
-	 * 
+	 *
 	 * @return int The attribute value casted as int.
 	 */
 	public function toInt() {
-		
+
 		return (int) $this->value;
 	}
-	
+
 	/**
 	 * Return the value as float.
-	 * 
+	 *
 	 * @return float The attribute value casted as float.
 	 */
 	public function toFloat() {
-		
+
 		return (float) $this->value;
 	}
 
 	/**
 	 * Return the value as string.
-	 * 
+	 *
 	 * @return string The attribute value casted as string.
 	 */
 	public function toString() {
-		
+
 		return (string) $this->value;
 	}
 }

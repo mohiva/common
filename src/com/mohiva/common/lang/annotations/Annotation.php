@@ -20,7 +20,7 @@ namespace com\mohiva\common\lang\annotations;
 
 /**
  * Annotation interface.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Lang/Annotations
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,10 +29,10 @@ namespace com\mohiva\common\lang\annotations;
  * @link      https://github.com/mohiva/common
  */
 interface Annotation {
-	
+
 	/**
 	 * Returns the name, without the "Annotation" suffix, of the annotation.
-	 * 
+	 *
 	 * @return string The name of the annotation.
 	 */
 	public function getName();

@@ -20,7 +20,7 @@ namespace com\mohiva\common\exceptions;
 
 /**
  * `MohivaException` is the marker interface for all Mohiva exceptions.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
