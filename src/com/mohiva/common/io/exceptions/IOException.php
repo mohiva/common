@@ -22,7 +22,7 @@ use com\mohiva\common\exceptions\MohivaException;
 
 /**
  * `IOException` is the superclass for all I/O exceptions.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

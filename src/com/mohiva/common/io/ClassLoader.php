@@ -20,7 +20,7 @@ namespace com\mohiva\common\io;
 
 /**
  * Interface to be implemented by objects that can load classes.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,14 +29,14 @@ namespace com\mohiva\common\io;
  * @link      https://github.com/mohiva/common
  */
 interface ClassLoader {
-	
+
 	/**
 	 * Loads the given class.
-	 * 
+	 *
 	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return 
+	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return
 	 * is disabled.
-	 * 
+	 *
 	 * @throws ClassNotFoundException if the class cannot be found.
 	 */
 	public function load($fqn);

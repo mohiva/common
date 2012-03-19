@@ -20,7 +20,7 @@ namespace com\mohiva\test\common\io;
 
 /**
  * Test suite for the Mohiva Common project.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -29,14 +29,13 @@ namespace com\mohiva\test\common\io;
  * @link      https://github.com/mohiva/common
  */
 class AllTests extends \PHPUnit_Framework_TestSuite {
-	
+
 	/**
 	 * Constructs the test suite handler.
 	 */
 	public function __construct() {
-		
+
 		$this->setName(__CLASS__);
-		$this->addTest(helpers\AllTests::suite());
 		$this->addTestSuite(__NAMESPACE__ . '\IncludePathTest');
 		$this->addTestSuite(__NAMESPACE__ . '\ClassAutoloaderTest');
 		$this->addTestSuite(__NAMESPACE__ . '\DefaultClassLoaderTest');
@@ -47,14 +46,14 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 		$this->addTestSuite(__NAMESPACE__ . '\FilesystemResourceContainerTest');
 		$this->addTestSuite(__NAMESPACE__ . '\TempResourceContainerTest');
 	}
-	
+
 	/**
 	 * Creates the suite.
-	 * 
+	 *
 	 * @return AllTests The test suite.
 	 */
 	public static function suite() {
-		
+
 		return new self();
 	}
 }

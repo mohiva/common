@@ -20,7 +20,7 @@ namespace com\mohiva\common\exceptions;
 
 /**
  * Exception thrown if an argument does not match with the expected value.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

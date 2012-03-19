@@ -20,7 +20,7 @@ namespace com\mohiva\common\io\exceptions;
 
 /**
  * Signals that a process cannot remove a file, resource or whatever.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

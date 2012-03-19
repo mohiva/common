@@ -24,7 +24,7 @@ use com\mohiva\common\parser\TokenStream;
 
 /**
  * Unit test case for the `AnnotationLexer` class.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -33,12 +33,12 @@ use com\mohiva\common\parser\TokenStream;
  * @link      https://github.com/mohiva/common
  */
 class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
-	
+
 	/**
 	 * Test if a string will be correct tokenized.
 	 */
 	public function testIfTokenizeCorrect() {
-		
+
 		$lexer = new AnnotationLexer(new TokenStream());
 		$lexer->scan('
 			@Annotation(
@@ -96,60 +96,60 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 		);
 		$this->assertSame($expected, $actual);
 	}
-	
+
 	/**
 	 * Test the syntax for single quoted strings.
 	 */
 	public function testSingleQuotedStringSyntax() {
-		
+
 		$lexer = new AnnotationLexer(new TokenStream());
 		$lexer->scan(" 'key\\\\':va\\'l\\'ue\\'' ");
-		
+
 		$actual = $this->buildActualTokens($lexer->getStream());
 		$expected = array(
 			array(AnnotationLexer::T_VALUE => "'key\\\\':va\\'l\\'ue\\''")
 		);
 		$this->assertSame($expected, $actual);
 	}
-	
+
 	/**
 	 * Test the syntax for double quoted strings.
 	 */
 	public function testDoubleQuotedStringSyntax() {
-		
+
 		$lexer = new AnnotationLexer(new TokenStream());
 		$lexer->scan(' "key\":va\"l\"ue\"" ');
-		
+
 		$actual = $this->buildActualTokens($lexer->getStream());
 		$expected = array(
 			array(AnnotationLexer::T_VALUE => '"key\":va\"l\"ue\""')
 		);
 		$this->assertSame($expected, $actual);
 	}
-	
+
 	/**
 	 * Test the none token.
 	 */
 	public function testNoneToken() {
-		
+
 		$lexer = new AnnotationLexer(new TokenStream());
 		$lexer->scan(' # ');
-		
+
 		$actual = $this->buildActualTokens($lexer->getStream());
 		$expected = array(
 			array(AnnotationLexer::T_NONE => '#'),
 		);
 		$this->assertSame($expected, $actual);
 	}
-	
+
 	/**
 	 * Create an array from the token stream which contains the tokens and the values as token => value pair.
-	 * 
+	 *
 	 * @param \com\mohiva\common\parser\TokenStream $stream The stream containing the lexer tokens.
 	 * @return array The actual list with tokens and values.
 	 */
 	private function buildActualTokens(TokenStream $stream) {
-		
+
 		$actual = array();
 		while ($stream->valid()) {
 			/* @var \com\mohiva\common\lang\AnnotationToken $current */
@@ -157,7 +157,7 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 			$stream->next();
 			$actual[] = array($current->getCode() => $current->getValue());
 		}
-		
+
 		return $actual;
 	}
 }

@@ -22,7 +22,7 @@ use com\mohiva\common\lang\AnnotationContext;
 
 /**
  * Unit test case for the `AnnotationContext` class.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
@@ -31,28 +31,28 @@ use com\mohiva\common\lang\AnnotationContext;
  * @link      https://github.com/mohiva/common
  */
 class AnnotationContextTest extends \PHPUnit_Framework_TestCase {
-	
+
 	/**
 	 * Test all getters for the values set with the constructor.
 	 */
 	public function testConstructorAccessors() {
-		
+
 		$namespace = sha1(microtime(true));
 		$useStatements = array(sha1(microtime(true)));
 		$class = sha1(microtime(true));
 		$location = sha1(microtime(true));
-		
+
 		$context = new AnnotationContext(
 			$namespace,
 			$useStatements,
 			$class,
 			$location
 		);
-		
+
 		$this->assertSame($namespace, $context->getNamespace());
 		$this->assertSame($useStatements, $context->getUseStatements());
 		$this->assertSame($class, $context->getClass());
 		$this->assertSame($location, $context->getLocation());
-		
+
 	}
 }

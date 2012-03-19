@@ -20,7 +20,7 @@ namespace com\mohiva\common\io\exceptions;
 
 /**
  * Signals that a process cannot write to a file, resource, stream or whatever.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>

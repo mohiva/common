@@ -22,7 +22,7 @@ use com\mohiva\common\exceptions\SecurityException;
 
 /**
  * Signals that a name is malformed. This means it contains illegal characters.
- * 
+ *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
