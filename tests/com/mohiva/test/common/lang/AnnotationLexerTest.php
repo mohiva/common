@@ -39,8 +39,8 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIfTokenizeCorrect() {
 
-		$lexer = new AnnotationLexer(new TokenStream());
-		$lexer->scan('
+		$lexer = new AnnotationLexer();
+		$stream = $lexer->scan('
 			@Annotation(
 				param = ["key":"va\"l\"ue"],
 				{key:\'value\'},
@@ -54,7 +54,7 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 				namespace\Class::CONSTANT
 			)'
 		);
-		$actual = $this->buildActualTokens($lexer->getStream());
+		$actual = $this->buildActualTokens($stream);
 		$expected = array(
 			array(AnnotationLexer::T_IDENTIFIER => '@'),
 			array(AnnotationLexer::T_NAME => 'Annotation'),
@@ -102,10 +102,10 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testSingleQuotedStringSyntax() {
 
-		$lexer = new AnnotationLexer(new TokenStream());
-		$lexer->scan(" 'key\\\\':va\\'l\\'ue\\'' ");
+		$lexer = new AnnotationLexer();
+		$stream = $lexer->scan(" 'key\\\\':va\\'l\\'ue\\'' ");
 
-		$actual = $this->buildActualTokens($lexer->getStream());
+		$actual = $this->buildActualTokens($stream);
 		$expected = array(
 			array(AnnotationLexer::T_VALUE => "'key\\\\':va\\'l\\'ue\\''")
 		);
@@ -117,10 +117,10 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testDoubleQuotedStringSyntax() {
 
-		$lexer = new AnnotationLexer(new TokenStream());
-		$lexer->scan(' "key\":va\"l\"ue\"" ');
+		$lexer = new AnnotationLexer();
+		$stream = $lexer->scan(' "key\":va\"l\"ue\"" ');
 
-		$actual = $this->buildActualTokens($lexer->getStream());
+		$actual = $this->buildActualTokens($stream);
 		$expected = array(
 			array(AnnotationLexer::T_VALUE => '"key\":va\"l\"ue\""')
 		);
@@ -132,10 +132,10 @@ class AnnotationLexerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testNoneToken() {
 
-		$lexer = new AnnotationLexer(new TokenStream());
-		$lexer->scan(' # ');
+		$lexer = new AnnotationLexer();
+		$stream = $lexer->scan(' # ');
 
-		$actual = $this->buildActualTokens($lexer->getStream());
+		$actual = $this->buildActualTokens($stream);
 		$expected = array(
 			array(AnnotationLexer::T_NONE => '#'),
 		);
