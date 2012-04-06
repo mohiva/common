@@ -45,7 +45,7 @@ class AnnotationParser {
 	const NS_SEPARATOR = '\\';
 
 	/**
-	 * @var \com\mohiva\common\parser\TokenStream
+	 * @var TokenStream
 	 */
 	private $stream = null;
 
@@ -57,9 +57,9 @@ class AnnotationParser {
 	/**
 	 * Parse the token stream to annotation objects.
 	 *
-	 * @param \com\mohiva\common\parser\TokenStream $stream The token stream to parse.
+	 * @param TokenStream $stream The token stream to parse.
 	 * @param AnnotationContext $context The annotation context.
-	 * @return \com\mohiva\common\lang\AnnotationList A list containing the found annotation instances.
+	 * @return AnnotationList A list containing the found annotation instances.
 	 */
 	public function parse(TokenStream $stream, AnnotationContext $context) {
 

@@ -182,7 +182,7 @@ class ReflectionDocComment {
 	 */
 	private function createTokenStream($docComment) {
 
-		$lexer = new AnnotationLexer(new TokenStream());
+		$lexer = new AnnotationLexer();
 		$stream = $lexer->scan($docComment);
 
 		return $stream;
