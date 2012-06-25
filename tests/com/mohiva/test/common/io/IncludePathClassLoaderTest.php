@@ -18,13 +18,15 @@
  */
 namespace com\mohiva\test\common\io;
 
+use Exception;
+use ReflectionMethod;
 use com\mohiva\test\common\Bootstrap;
-use com\mohiva\common\io\DefaultClassLoader;
+use com\mohiva\common\io\IncludePathClassLoader;
 use com\mohiva\common\io\exceptions\ClassNotFoundException;
 use com\mohiva\common\io\exceptions\MalformedNameException;
 
 /**
- * Unit test case for the `DefaultClassLoaderResource` class.
+ * Unit test case for the `IncludePathClassLoader` class.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
@@ -33,7 +35,7 @@ use com\mohiva\common\io\exceptions\MalformedNameException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
+class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * Path to the fixtures to test.
@@ -72,9 +74,9 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIsValidReturnsTrue() {
 
-		$loader = new DefaultClassLoader();
+		$loader = new IncludePathClassLoader();
 
-		$method = new \ReflectionMethod($loader, 'isValid');
+		$method = new ReflectionMethod($loader, 'isValid');
 		$method->setAccessible(true);
 
 		foreach($this->validClassNames as $className) {
@@ -87,9 +89,9 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIsValidReturnsFalse() {
 
-		$loader = new DefaultClassLoader();
+		$loader = new IncludePathClassLoader();
 
-		$method = new \ReflectionMethod($loader, 'isValid');
+		$method = new ReflectionMethod($loader, 'isValid');
 		$method->setAccessible(true);
 
 		foreach($this->invalidClassNames as $className) {
@@ -102,13 +104,13 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testToPSR0FileName() {
 
-		$loader = new DefaultClassLoader();
+		$loader = new IncludePathClassLoader();
 
-		$method = new \ReflectionMethod($loader, 'toPSR0FileName');
+		$method = new ReflectionMethod($loader, 'toPSR0FileName');
 		$method->setAccessible(true);
 
 		$classNames = array(
-			'com\mohiva\common\io\DefaultClassLoader' => 'com/mohiva/common/io/DefaultClassLoader.php',
+			'com\mohiva\common\io\IncludePathClassLoader' => 'com/mohiva/common/io/IncludePathClassLoader.php',
 			'com\mohiva\common\io\Default_ClassLoader' => 'com/mohiva/common/io/Default/ClassLoader.php',
 			'Pre_Namespace_Class' => 'Pre/Namespace/Class.php'
 		);
@@ -125,10 +127,10 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadClass() {
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$class = $loader->load(self::VALID_CLASS);
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
@@ -139,10 +141,10 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadInterface() {
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$class = $loader->load(self::VALID_INTERFACE);
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
@@ -153,10 +155,10 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadPreNamespaceClassFromPath() {
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$class = $loader->load('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture');
 			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
@@ -168,7 +170,7 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testForMalformedNameException() {
 
-		$loader = new DefaultClassLoader();
+		$loader = new IncludePathClassLoader();
 		$loader->load(self::MALFORMED_CLASS);
 	}
 
@@ -178,12 +180,12 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testForFileNotFoundException() {
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$loader->load(self::NOT_EXISTING_CLASS);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
@@ -205,14 +207,14 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$loader->load(self::NOT_READABLE_CLASS, false);
 			chmod($file, $oldPerms);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
 			chmod($file, $oldPerms);
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			chmod($file, $oldPerms);
 			$this->fail($e->getMessage());
 		}
@@ -224,13 +226,13 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testForMissingDeclarationException() {
 
 		try {
-			$loader = new DefaultClassLoader();
+			$loader = new IncludePathClassLoader();
 			$loader->load(self::NOT_DECLARED, false);
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MissingDeclarationException',
 				$e->getPrevious()
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}

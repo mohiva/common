@@ -38,7 +38,7 @@ class AllTests extends \PHPUnit_Framework_TestSuite {
 		$this->setName(__CLASS__);
 		$this->addTestSuite(__NAMESPACE__ . '\IncludePathTest');
 		$this->addTestSuite(__NAMESPACE__ . '\ClassAutoloaderTest');
-		$this->addTestSuite(__NAMESPACE__ . '\DefaultClassLoaderTest');
+		$this->addTestSuite(__NAMESPACE__ . '\IncludePathClassLoaderTest');
 		$this->addTestSuite(__NAMESPACE__ . '\DefaultResourceLoaderTest');
 		$this->addTestSuite(__NAMESPACE__ . '\FileResourceTest');
 		$this->addTestSuite(__NAMESPACE__ . '\TempFileResourceTest');

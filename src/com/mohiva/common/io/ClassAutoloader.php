@@ -90,7 +90,7 @@ class ClassAutoloader {
 	 * The class constructor.
 	 *
 	 * @param ClassLoader $classLoader The `ClassLoader` implementation to use for class loading
-	 * or null to use the `DefaultClassLoader` implementation.
+	 * or null to use the `IncludePathClassLoader` implementation.
 	 */
 	public function __construct(ClassLoader $classLoader = null) {
 
@@ -98,8 +98,8 @@ class ClassAutoloader {
 			$this->classLoader = $classLoader;
 		} else {
 			require_once 'ClassLoader.php';
-			require_once 'DefaultClassLoader.php';
-			$this->classLoader = new DefaultClassLoader(false);
+			require_once 'IncludePathClassLoader.php';
+			$this->classLoader = new IncludePathClassLoader(false);
 		}
 	}
 

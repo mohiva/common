@@ -169,7 +169,7 @@ class DefaultResourceLoader implements ResourceLoader {
 	public function getClassLoader() {
 
 		if ($this->classLoader == null) {
-			$this->classLoader = new DefaultClassLoader();
+			$this->classLoader = new IncludePathClassLoader();
 		}
 
 		return $this->classLoader;

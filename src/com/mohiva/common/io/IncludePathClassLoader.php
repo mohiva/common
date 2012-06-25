@@ -25,11 +25,11 @@ use com\mohiva\common\io\exceptions\ClassNotFoundException;
 use com\mohiva\common\io\exceptions\FileNotFoundException;
 
 /**
- * The default implementation of the `ClassLoader` interface.
+ * `ClassLoader` implementation which loads classes from include path.
  *
  * This is a full PSR-0 compatible class loader implementation proposed by
  * the PHP Standards Working Group. Fore more information visit the proposal
- * page: http://groups.google.com/group/php-standards/web/psr-0-final-proposal.
+ * page: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO
@@ -38,7 +38,7 @@ use com\mohiva\common\io\exceptions\FileNotFoundException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class DefaultClassLoader implements ClassLoader {
+class IncludePathClassLoader implements ClassLoader {
 
 	/**
 	 * Indicates if a `ReflectionClass` instance or null should be returned for the loaded class.
@@ -61,7 +61,7 @@ class DefaultClassLoader implements ClassLoader {
 	 * Return a `ReflectionClass` instance for the given class.
 	 *
 	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return
+	 * @return ReflectionClass The resulting `ReflectionClass` object or null if the return
 	 * is disabled.
 	 *
 	 * @throws MalformedNameException if the class name contains illegal characters.
@@ -113,7 +113,7 @@ class DefaultClassLoader implements ClassLoader {
 	 *
 	 * @param string $fqn A fully qualified name.
 	 * @return string The path to the class file.
-	 * @see http://groups.google.com/group/php-standards/web/psr-0-final-proposal
+	 * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
 	 */
 	private function toPSR0FileName($fqn) {
 
@@ -160,8 +160,7 @@ class DefaultClassLoader implements ClassLoader {
 	 *
 	 * @param string $fqn The fully qualified name to check for.
 	 * @param string $file The file to include.
-	 * @throws \com\mohiva\common\io\exceptions\MissingDeclarationException if the declaration for the FQN
-     * is missing in the given file.
+	 * @throws MissingDeclarationException if the declaration for the FQN is missing in the given file.
 	 */
 	private function loadClassFromFile($fqn, $file) {
 
