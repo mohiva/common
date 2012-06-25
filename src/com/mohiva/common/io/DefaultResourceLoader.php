@@ -18,15 +18,14 @@
  */
 namespace com\mohiva\common\io;
 
+use ReflectionClass;
 use SplFileInfo;
 
 /**
  * The default implementation of the `ResourceLoader` interface.
  *
- * To avoid useless class loading(it should be programmed against the
- * `Resource::TYPE` and `Resource::DESCRIPTOR`
- * class constants), there are no default descriptors registered in
- * this implementation.
+ * To avoid useless class loading(it should be programmed against the `Resource::TYPE` and `Resource::DESCRIPTOR`
+ * class constants), there are no default descriptors registered in this implementation.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO
@@ -83,8 +82,8 @@ class DefaultResourceLoader implements ResourceLoader {
 		$path = $matches[2];
 
 		$loader = $this->getClassLoader();
-		$class = $loader->load($handle);
-		$resource = $class->newInstance(new SplFileInfo($path));
+		$loader->load($handle);
+		$resource = new $handle(new SplFileInfo($path));
 
 		return $resource;
 	}
@@ -106,8 +105,8 @@ class DefaultResourceLoader implements ResourceLoader {
 	public function getResourceByType($path, $type) {
 
 		$loader = $this->getClassLoader();
-		$class = $loader->load($type);
-		$resource = $class->newInstance(new SplFileInfo($path));
+		$loader->load($type);
+		$resource = new $type(new SplFileInfo($path));
 
 		return $resource;
 	}

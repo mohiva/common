@@ -19,6 +19,7 @@
 namespace com\mohiva\test\common\cache\containers;
 
 use com\mohiva\common\lang\AnnotationParser;
+use com\mohiva\common\lang\ReflectionClass;
 use com\mohiva\common\lang\ReflectionDocComment;
 use com\mohiva\common\io\IncludePathClassLoader;
 use com\mohiva\common\io\TempResourceContainer;
@@ -53,8 +54,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 	public function testStoreAnnotationList() {
 
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
-		$loader = new IncludePathClassLoader();
-		$class = $loader->load(self::TEST_CLASS);
+		$class = new ReflectionClass(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 
@@ -72,8 +72,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 	public function testAnnotationListExists() {
 
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
-		$loader = new IncludePathClassLoader();
-		$class = $loader->load(self::TEST_CLASS);
+		$class = new ReflectionClass(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 
@@ -91,8 +90,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 	public function testFetchAnnotationList() {
 
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
-		$loader = new IncludePathClassLoader();
-		$class = $loader->load(self::TEST_CLASS);
+		$class = new ReflectionClass(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 
@@ -110,8 +108,7 @@ class AnnotationContainerTest extends \PHPUnit_Framework_TestCase {
 	public function testRemoveAnnotationList() {
 
 		/* @var \com\mohiva\common\lang\AnnotationReflector $class */
-		$loader = new IncludePathClassLoader();
-		$class = $loader->load(self::TEST_CLASS);
+		$class = new ReflectionClass(self::TEST_CLASS);
 		$docReflector = new ReflectionDocComment($class);
 		$annotationList = $docReflector->getAnnotationList();
 

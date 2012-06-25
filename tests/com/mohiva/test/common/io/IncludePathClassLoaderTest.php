@@ -100,13 +100,13 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * Check if the `toPSR0FileName` method returns the correct file names for a set of class names.
+	 * Check if the `toFileName` method returns the correct file names for a set of class names.
 	 */
 	public function testToPSR0FileName() {
 
 		$loader = new IncludePathClassLoader();
 
-		$method = new ReflectionMethod($loader, 'toPSR0FileName');
+		$method = new ReflectionMethod($loader, 'toFileName');
 		$method->setAccessible(true);
 
 		$classNames = array(
@@ -128,8 +128,8 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			$loader = new IncludePathClassLoader();
-			$class = $loader->load(self::VALID_CLASS);
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
+			$loader->load(self::VALID_CLASS);
+			$this->assertTrue(class_exists(self::VALID_CLASS, false));
 		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
@@ -142,8 +142,8 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			$loader = new IncludePathClassLoader();
-			$class = $loader->load(self::VALID_INTERFACE);
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
+			$loader->load(self::VALID_INTERFACE);
+			$this->assertTrue(interface_exists(self::VALID_INTERFACE, false));
 		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
@@ -156,8 +156,8 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			$loader = new IncludePathClassLoader();
-			$class = $loader->load('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture');
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
+			$loader->load('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture');
+			$this->assertTrue(class_exists('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture', false));
 		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
@@ -208,7 +208,7 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			$loader = new IncludePathClassLoader();
-			$loader->load(self::NOT_READABLE_CLASS, false);
+			$loader->load(self::NOT_READABLE_CLASS);
 			chmod($file, $oldPerms);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
@@ -227,7 +227,7 @@ class IncludePathClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			$loader = new IncludePathClassLoader();
-			$loader->load(self::NOT_DECLARED, false);
+			$loader->load(self::NOT_DECLARED);
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MissingDeclarationException',
 				$e->getPrevious()

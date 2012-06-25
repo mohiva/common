@@ -18,6 +18,7 @@
  */
 namespace com\mohiva\common\io;
 
+use Exception;
 use com\mohiva\common\lang\ReflectionClass;
 use com\mohiva\common\io\exceptions\MalformedNameException;
 use com\mohiva\common\io\exceptions\MissingDeclarationException;
@@ -41,36 +42,16 @@ use com\mohiva\common\io\exceptions\FileNotFoundException;
 class IncludePathClassLoader implements ClassLoader {
 
 	/**
-	 * Indicates if a `ReflectionClass` instance or null should be returned for the loaded class.
-	 *
-	 * @var bool
-	 */
-	private $returnRef = true;
-
-	/**
-	 * The class constructor.
-	 *
-	 * @param boolean $returnRef True if the class reference should be returned, false otherwise.
-	 */
-	public function __construct($returnRef = true) {
-
-		$this->returnRef = $returnRef;
-	}
-
-	/**
-	 * Return a `ReflectionClass` instance for the given class.
+	 * Loads the given class from include path.
 	 *
 	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return ReflectionClass The resulting `ReflectionClass` object or null if the return
-	 * is disabled.
-	 *
 	 * @throws MalformedNameException if the class name contains illegal characters.
 	 * @throws ClassNotFoundException if the class cannot be found.
 	 */
 	public function load($fqn) {
 
 		if (class_exists($fqn, false) || interface_exists($fqn, false)) {
-			return $this->returnRef ? new ReflectionClass($fqn) : null;
+			return;
 		} else if (!$this->isValid($fqn)) {
 			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once __DIR__ . '/../exceptions/SecurityException.php';
@@ -79,17 +60,15 @@ class IncludePathClassLoader implements ClassLoader {
 		}
 
 		try {
-			$fileName = $this->toPSR0FileName($fqn);
+			$fileName = $this->toFileName($fqn);
 			$fileName = $this->getClassFileFromIncludePath($fileName);
 			$this->loadClassFromFile($fqn, $fileName);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/IOException.php';
 			require_once 'exceptions/ClassNotFoundException.php';
 			throw new ClassNotFoundException("The class `{$fqn}` cannot be found", null, $e);
 		}
-
-		return $this->returnRef ? new ReflectionClass($fqn) : null;
 	}
 
 	/**
@@ -115,7 +94,7 @@ class IncludePathClassLoader implements ClassLoader {
 	 * @return string The path to the class file.
 	 * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
 	 */
-	private function toPSR0FileName($fqn) {
+	private function toFileName($fqn) {
 
 		$fileName = '';
 		$className = ltrim($fqn, '\\');

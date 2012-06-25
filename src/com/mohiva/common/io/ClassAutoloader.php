@@ -99,7 +99,7 @@ class ClassAutoloader {
 		} else {
 			require_once 'ClassLoader.php';
 			require_once 'IncludePathClassLoader.php';
-			$this->classLoader = new IncludePathClassLoader(false);
+			$this->classLoader = new IncludePathClassLoader();
 		}
 	}
 
