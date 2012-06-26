@@ -18,9 +18,11 @@
  */
 namespace com\mohiva\common\io;
 
+use Exception;
 use SplFileInfo;
 use SplFileObject;
 use InvalidArgumentException;
+use com\mohiva\common\util\Event;
 use com\mohiva\common\util\DefaultEventDispatcher;
 use com\mohiva\common\io\exceptions\ReadException;
 use com\mohiva\common\io\exceptions\WriteException;
@@ -55,14 +57,14 @@ class TempFileResource implements Resource {
 	/**
 	 * The file info object associated with this resource.
 	 *
-	 * @var \SplFileInfo
+	 * @var SplFileInfo
 	 */
 	private $fileInfo = null;
 
 	/**
 	 * The file object associated with this resource.
 	 *
-	 * @var \SplFileObject
+	 * @var SplFileObject
 	 */
 	private $fileObject = null;
 
@@ -97,7 +99,8 @@ class TempFileResource implements Resource {
 	/**
 	 * The class constructor.
 	 *
-	 * @param \SplFileInfo $fileInfo The file info object associated with the resource.
+	 * @param SplFileInfo $fileInfo The file info object associated with the resource.
+	 * @throws InvalidArgumentException if the temporary file doesn't start with php://temp or php://memory.
 	 */
 	public function __construct(SplFileInfo $fileInfo) {
 
@@ -112,7 +115,7 @@ class TempFileResource implements Resource {
 	/**
 	 * Set the object handle for the resource.
 	 *
-	 * @param \SplFileInfo $fileInfo The object handle of the resource.
+	 * @param SplFileInfo $fileInfo The object handle of the resource.
 	 */
 	public function setHandle(SplFileInfo $fileInfo) {
 
@@ -122,7 +125,7 @@ class TempFileResource implements Resource {
 	/**
 	 * Return the object handle of the resource or null if the resource isn't open.
 	 *
-	 * @return \SplFileInfo The object handle of the resource or null if the resource isn't open.
+	 * @return SplFileInfo The object handle of the resource or null if the resource isn't open.
 	 */
 	public function getHandle() {
 
@@ -139,8 +142,7 @@ class TempFileResource implements Resource {
 	 *   <li>access time</li>
 	 * </ul>
 	 *
-	 * @return \com\mohiva\common\io\ResourceStatistics An object containing statistics information
-	 * about a resource.
+	 * @return ResourceStatistics An object containing statistics information about a resource.
 	 */
 	public function getStat() {
 
@@ -149,38 +151,23 @@ class TempFileResource implements Resource {
 		$stat->setAccessTime($this->accessTime);
 		$stat->setModificationTime($this->modificationTime);
 		$stat->setSize($this->size);
-
-		$listener = array($this, 'resourceStatisticsHandler');
-		$stat->addEventListener(ResourceStatisticsChangeEvent::CREATION_TIME_CHANGED, $listener);
-		$stat->addEventListener(ResourceStatisticsChangeEvent::ACCESS_TIME_CHANGED, $listener);
-		$stat->addEventListener(ResourceStatisticsChangeEvent::MODIFICATION_TIME_CHANGED, $listener);
+		$stat->addEventListener(ResourceStatisticsChangeEvent::CREATION_TIME_CHANGED, function(Event $event) {
+			/* @var \com\mohiva\common\io\ResourceStatistics $target */
+			$target = $event->getTarget();
+			$this->creationTime = $target->getCreationTime();
+		});
+		$stat->addEventListener(ResourceStatisticsChangeEvent::ACCESS_TIME_CHANGED, function(Event $event) {
+			/* @var \com\mohiva\common\io\ResourceStatistics $target */
+			$target = $event->getTarget();
+			$this->accessTime = $target->getAccessTime();
+		});
+		$stat->addEventListener(ResourceStatisticsChangeEvent::MODIFICATION_TIME_CHANGED, function(Event $event) {
+			/* @var \com\mohiva\common\io\ResourceStatistics $target */
+			$target = $event->getTarget();
+			$this->modificationTime = $target->getModificationTime();
+		});
 
 		return $stat;
-	}
-
-	/**
-	 * Handles the `ResourceStatisticsChangeEvent` event.
-	 *
-	 * @param \com\mohiva\common\io\events\ResourceStatisticsChangeEvent $event The associated event.
-	 */
-	public function resourceStatisticsHandler(ResourceStatisticsChangeEvent $event) {
-
-		/* @var \com\mohiva\common\io\TempFileResource $self */
-		/* @var \com\mohiva\common\io\ResourceStatistics $target */
-		$target = $event->getTarget();
-		switch ($event->getType()) {
-			case ResourceStatisticsChangeEvent::CREATION_TIME_CHANGED:
-				$this->creationTime = $target->getCreationTime();
-				break;
-
-			case ResourceStatisticsChangeEvent::ACCESS_TIME_CHANGED:
-				$this->accessTime = $target->getAccessTime();
-				break;
-
-			case ResourceStatisticsChangeEvent::MODIFICATION_TIME_CHANGED:
-				$this->modificationTime = $target->getModificationTime();
-				break;
-		}
 	}
 
 	/**
@@ -192,7 +179,7 @@ class TempFileResource implements Resource {
 	 */
 	public function exists() {
 
-		return $this->fileObject instanceof \SplFileObject;
+		return $this->fileObject instanceof SplFileObject;
 	}
 
 	/**
@@ -214,8 +201,8 @@ class TempFileResource implements Resource {
 				$content .= $this->fileObject->fgets();
 			}
 			$this->accessTime = time();
-		} catch (\Exception $e) {
-			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		return $content;

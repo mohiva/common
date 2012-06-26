@@ -19,6 +19,7 @@
 namespace com\mohiva\common\io;
 
 use SplFileInfo;
+use Exception;
 use com\mohiva\common\io\exceptions\ResourceNotFoundException;
 use com\mohiva\common\io\exceptions\ReadException;
 use com\mohiva\common\io\exceptions\LockException;
@@ -55,14 +56,14 @@ class FileResource implements Resource {
 	/**
 	 * The file info object associated with this resource.
 	 *
-	 * @var \SplFileInfo
+	 * @var SplFileInfo
 	 */
 	private $fileInfo = null;
 
 	/**
 	 * The class constructor.
 	 *
-	 * @param \SplFileInfo $fileInfo The file info object associated with the resource.
+	 * @param SplFileInfo $fileInfo The file info object associated with the resource.
 	 */
 	public function __construct(SplFileInfo $fileInfo) {
 
@@ -72,7 +73,7 @@ class FileResource implements Resource {
 	/**
 	 * Set the object handle for the resource.
 	 *
-	 * @param \SplFileInfo $fileInfo The object handle of the resource.
+	 * @param SplFileInfo $fileInfo The object handle of the resource.
 	 */
 	public function setHandle(SplFileInfo $fileInfo) {
 
@@ -82,7 +83,7 @@ class FileResource implements Resource {
 	/**
 	 * Return the object handle of the resource or null if the resource isn't open.
 	 *
-	 * @return \SplFileInfo The object handle of the resource or null if the resource isn't open.
+	 * @return SplFileInfo The object handle of the resource or null if the resource isn't open.
 	 */
 	public function getHandle() {
 
@@ -98,8 +99,7 @@ class FileResource implements Resource {
 	 *   <li>access time</li>
 	 * </ul>
 	 *
-	 * @return \com\mohiva\common\io\ResourceStatistics An object containing statistics information
-	 * about a resource.
+	 * @return ResourceStatistics An object containing statistics information about a resource.
 	 */
 	public function getStat() {
 
@@ -113,8 +113,8 @@ class FileResource implements Resource {
 		// The event listener used to set the modification and access time
 		$fileInfo = $this->fileInfo;
 		$listener = function(ResourceStatisticsChangeEvent $event) use ($fileInfo) {
-			/* @var \com\mohiva\common\io\ResourceStatistics $target */
-			/* @var \SplFileInfo $fileInfo */
+			/* @var ResourceStatistics $target */
+			/* @var SplFileInfo $fileInfo */
 			$target = $event->getTarget();
 			touch($fileInfo->getPathname(), $target->getModificationTime(), $target->getAccessTime());
 		};
@@ -144,15 +144,15 @@ class FileResource implements Resource {
 	 * Read the content of the resource and return it.
 	 *
 	 * @return string The content of the resource.
-	 * @throws ResourceNotOpenedException if the resource can't be opened.
+	 * @throws ResourceNotFoundException if the resource can't be opened.
 	 * @throws ReadException if cannot be read from resource.
 	 */
 	public function read() {
 
 		try {
 			$file = $this->fileInfo->openFile('r');
-		} catch (\Exception $e) {
-			throw new ResourceNotFoundException("Cannot open resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new ResourceNotFoundException("Cannot open resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		$content = '';
@@ -160,8 +160,8 @@ class FileResource implements Resource {
 			while ($file->valid()) {
 				$content .= $file->fgets();
 			}
-		} catch (\Exception $e) {
-			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		return $content;
@@ -174,7 +174,7 @@ class FileResource implements Resource {
 	 * will overwrite it with the given data.
 	 *
 	 * @param string $data The data to write.
-	 * @throws ResourceNotOpenedException if the resource isn't opened.
+	 * @throws ResourceNotFoundException if the resource isn't opened.
 	 * @throws WriteException if cannot be written to the resource.
 	 */
 	public function write($data) {
@@ -182,8 +182,8 @@ class FileResource implements Resource {
 		// Open the resource in write mode
 		try {
 			$file = $this->fileInfo->openFile('w');
-		} catch (\Exception $e) {
-			throw new ResourceNotFoundException("Cannot open resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new ResourceNotFoundException("Cannot open resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		// Try to get an exclusive non blocked lock for the resource
@@ -215,8 +215,8 @@ class FileResource implements Resource {
 
 		try {
 			unlink($this->fileInfo->getPathname());
-		} catch (\Exception $e) {
-			throw new RemoveException("Cannot remove the resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new RemoveException("Cannot remove the resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		return true;
