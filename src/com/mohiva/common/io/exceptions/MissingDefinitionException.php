@@ -10,43 +10,24 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\io;
+namespace com\mohiva\common\io\exceptions;
+
+use com\mohiva\common\exceptions\MohivaException;
 
 /**
- * Interface to be implemented by objects that can load resources.
+ * Signals that a definition was expected.
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/IO/Exceptions
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-interface ResourceLoader {
-
-	/**
-	 * Return a Resource handle for the specified path.
-	 *
-	 * The implementation must detect what type of resource handle
-	 * should be loaded for the given path.
-	 *
-	 * @param string $path The path to the resource.
-	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
-	 */
-	public function getResource($path);
-
-	/**
-	 * Return a Resource handle of the given type for the specified path.
-	 *
-	 * @param string $path The path to the resource.
-	 * @param string $type The FQN of the resource handle.
-	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
-	 */
-	public function getResourceByType($path, $type);
-}
+class MissingDefinitionException extends \Exception implements MohivaException {}

@@ -34,10 +34,7 @@ interface ClassLoader {
 	 * Loads the given class.
 	 *
 	 * @param string $fqn The fully qualified name of the class to load.
-	 * @return \com\mohiva\common\lang\ReflectionClass The resulting `ReflectionClass` object or null if the return
-	 * is disabled.
-	 *
-	 * @throws ClassNotFoundException if the class cannot be found.
+	 * @throws \com\mohiva\common\io\exceptions\ClassNotFoundException if the class cannot be found.
 	 */
 	public function load($fqn);
 }

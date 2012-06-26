@@ -10,43 +10,40 @@
  * https://github.com/mohiva/common/blob/master/LICENSE.textile
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-namespace com\mohiva\common\io;
+namespace com\mohiva\test\common\io;
+
+use com\mohiva\common\io\IncludePathClassLoader;
 
 /**
- * Interface to be implemented by objects that can load resources.
+ * Unit test case for the `IncludePathClassLoader` class.
  *
  * @category  Mohiva/Common
- * @package   Mohiva/Common/IO
+ * @package   Mohiva/Common/Test
  * @author    Christian Kaps <christian.kaps@mohiva.com>
  * @copyright Copyright (c) 2007-2012 Christian Kaps (http://www.mohiva.com)
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-interface ResourceLoader {
+class IncludePathClassLoaderTest extends AbstractClassLoaderTest {
 
 	/**
-	 * Return a Resource handle for the specified path.
+	 * The loader instance.
 	 *
-	 * The implementation must detect what type of resource handle
-	 * should be loaded for the given path.
-	 *
-	 * @param string $path The path to the resource.
-	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
+	 * @var IncludePathClassLoader
 	 */
-	public function getResource($path);
+	protected $loader = null;
 
 	/**
-	 * Return a Resource handle of the given type for the specified path.
-	 *
-	 * @param string $path The path to the resource.
-	 * @param string $type The FQN of the resource handle.
-	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
+	 * Setup the test case.
 	 */
-	public function getResourceByType($path, $type);
+	public function setUp() {
+
+		$this->loader = new IncludePathClassLoader();
+	}
 }

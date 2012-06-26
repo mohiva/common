@@ -18,13 +18,13 @@
  */
 namespace com\mohiva\test\common\io;
 
+use Exception;
 use com\mohiva\test\common\Bootstrap;
-use com\mohiva\common\io\DefaultClassLoader;
 use com\mohiva\common\io\exceptions\ClassNotFoundException;
 use com\mohiva\common\io\exceptions\MalformedNameException;
 
 /**
- * Unit test case for the `DefaultClassLoaderResource` class.
+ * Abstract unit test case for the `AbstractClassLoader` class.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
@@ -33,7 +33,7 @@ use com\mohiva\common\io\exceptions\MalformedNameException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
+abstract class AbstractClassLoaderTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * Path to the fixtures to test.
@@ -45,18 +45,15 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	const NOT_EXISTING_CLASS = '\com\mohiva\test\resources\common\io\NotExistingFixture';
 	const NOT_READABLE_CLASS = '\com\mohiva\test\resources\common\io\NotReadableClassFixture';
 	const NOT_DECLARED       = '\com\mohiva\test\resources\common\io\NotDeclaredFixture';
-	const MALFORMED_CLASS    = '../../etc/passwd';
+	const MIXED_NS_CLASS     = '\com\mohiva\test\resources\common\io\Pre_ClassFixture';
+	const PRE_NS_CLASS       = '\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture';
 
 	/**
-	 * A list with valid class names.
+	 * The loader instance.
 	 *
-	 * @var array
+	 * @var \com\mohiva\common\io\ClassLoader
 	 */
-	private $validClassNames = array(
-		'com\mohiva\common\io\helpers\ClassNameValidator',
-		'\com\mohiva\common\io\helpers\ClassNameValidator',
-		'Pre_Namespace_Class'
-	);
+	protected $loader = null;
 
 	/**
 	 * A list with invalid class names.
@@ -68,54 +65,39 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	);
 
 	/**
-	 * Check if the `isValid` method returns true for valid class names.
+	 * Check if the `load` method throws a `MalformedNameException` if the class name is invalid.
 	 */
-	public function testIsValidReturnsTrue() {
-
-		$loader = new DefaultClassLoader();
-
-		$method = new \ReflectionMethod($loader, 'isValid');
-		$method->setAccessible(true);
-
-		foreach($this->validClassNames as $className) {
-			$this->assertTrue($method->invoke($loader, $className));
-		}
-	}
-
-	/**
-	 * Check if the `isValid` method returns false for invalid class names.
-	 */
-	public function testIsValidReturnsFalse() {
-
-		$loader = new DefaultClassLoader();
-
-		$method = new \ReflectionMethod($loader, 'isValid');
-		$method->setAccessible(true);
+	public function testLoadThrowsMalformedNameException() {
 
 		foreach($this->invalidClassNames as $className) {
-			$this->assertFalse($method->invoke($loader, $className));
+			try {
+				$this->loader->load($className);
+				$this->fail('MalformedNameException expected');
+			} catch (MalformedNameException $e) {
+				$this->assertFalse(class_exists($className, false));
+			}
 		}
 	}
 
 	/**
-	 * Check if the `toPSR0FileName` method returns the correct file names for a set of class names.
+	 * Check if the loader is PSR-0 compatible.
 	 */
-	public function testToPSR0FileName() {
-
-		$loader = new DefaultClassLoader();
-
-		$method = new \ReflectionMethod($loader, 'toPSR0FileName');
-		$method->setAccessible(true);
+	public function testPsr0Compatibility() {
 
 		$classNames = array(
-			'com\mohiva\common\io\DefaultClassLoader' => 'com/mohiva/common/io/DefaultClassLoader.php',
-			'com\mohiva\common\io\Default_ClassLoader' => 'com/mohiva/common/io/Default/ClassLoader.php',
-			'Pre_Namespace_Class' => 'Pre/Namespace/Class.php'
+			self::VALID_CLASS,
+			self::MIXED_NS_CLASS,
+			self::PRE_NS_CLASS
 		);
 
-		foreach($classNames as $className => $fileName) {
-			$expected = str_replace('/', DIRECTORY_SEPARATOR, $fileName);
-			$this->assertSame($expected, $method->invoke($loader, $className));
+		foreach($classNames as $className) {
+			try {
+				$this->loader->load($className);
+				$this->assertTrue(class_exists($className, false));
+			} catch (Exception $e) {
+				$message = $e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage();
+				$this->fail($message);
+			}
 		}
 	}
 
@@ -125,10 +107,9 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadClass() {
 
 		try {
-			$loader = new DefaultClassLoader();
-			$class = $loader->load(self::VALID_CLASS);
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
+			$this->loader->load(self::VALID_CLASS);
+			$this->assertTrue(class_exists(self::VALID_CLASS, false));
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
@@ -139,57 +120,31 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadInterface() {
 
 		try {
-			$loader = new DefaultClassLoader();
-			$class = $loader->load(self::VALID_INTERFACE);
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
+			$this->loader->load(self::VALID_INTERFACE);
+			$this->assertTrue(interface_exists(self::VALID_INTERFACE, false));
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
 
 	/**
-	 * Test if can load classes in the form `Pre_Namespace_ClassFixture`.
-	 */
-	public function testLoadPreNamespaceClassFromPath() {
-
-		try {
-			$loader = new DefaultClassLoader();
-			$class = $loader->load('\com_mohiva_test_resources_common_io_Pre_Namespace_ClassFixture');
-			$this->assertInstanceOf('\com\mohiva\common\lang\ReflectionClass', $class);
-		} catch (\Exception $e) {
-			$this->fail($e->getMessage());
-		}
-	}
-
-	/**
-	 * Test if a `MalformedNameException` will be thrown on invalid class name.
-	 *
-	 * @expectedException \com\mohiva\common\io\exceptions\MalformedNameException
-	 */
-	public function testForMalformedNameException() {
-
-		$loader = new DefaultClassLoader();
-		$loader->load(self::MALFORMED_CLASS);
-	}
-
-	/**
-	 * Test if a `FileNotFoundException` will be thrown on not existing file.
+	 * Test if the loader throws a `FileNotFoundException` if the file which matches the class name cannot be
+	 * found in file system.
 	 */
 	public function testForFileNotFoundException() {
 
 		try {
-			$loader = new DefaultClassLoader();
-			$loader->load(self::NOT_EXISTING_CLASS);
+			$this->loader->load(self::NOT_EXISTING_CLASS);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}
 
 	/**
-	 * Test if a `FileNotFoundException` will be thrown on not readable file.
+	 * Test if the loader throws a `FileNotFoundException` if the file which matches the class name isn't readable.
 	 */
 	public function testForFileNotFoundExceptionOnNotReadableFile() {
 
@@ -205,32 +160,31 @@ class DefaultClassLoaderTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		try {
-			$loader = new DefaultClassLoader();
-			$loader->load(self::NOT_READABLE_CLASS, false);
+			$this->loader->load(self::NOT_READABLE_CLASS);
 			chmod($file, $oldPerms);
 			$this->fail('ClassNotFoundException was expected but never thrown');
 		} catch (ClassNotFoundException $e) {
 			chmod($file, $oldPerms);
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\FileNotFoundException', $e->getPrevious());
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			chmod($file, $oldPerms);
 			$this->fail($e->getMessage());
 		}
 	}
 
 	/**
-	 * Test if a `MissingDeclarationException` will be thrown on not declared class.
+	 * Test if the loader throws a `MissingDeclarationException` if the class isn't declared in the file
+	 * which matches the class name.
 	 */
 	public function testForMissingDeclarationException() {
 
 		try {
-			$loader = new DefaultClassLoader();
-			$loader->load(self::NOT_DECLARED, false);
+			$this->loader->load(self::NOT_DECLARED);
 		} catch (ClassNotFoundException $e) {
 			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MissingDeclarationException',
 				$e->getPrevious()
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail($e->getMessage());
 		}
 	}

@@ -21,7 +21,7 @@ namespace com\mohiva\test\common\lang;
 use ReflectionClass;
 use com\mohiva\test\common\Bootstrap;
 use com\mohiva\common\lang\ReflectionClassNamespace;
-use com\mohiva\common\io\DefaultClassLoader;
+use com\mohiva\common\io\IncludePathClassLoader;
 use com\mohiva\common\io\IncludePath;
 
 /**
@@ -84,7 +84,7 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testClassWithoutNamespace() {
 
-		$classLoader = new DefaultClassLoader();
+		$classLoader = new IncludePathClassLoader();
 		$classLoader->load('ClassWithoutNamespace');
 
 		$expected = array('ReflectionClass' => 'com\mohiva\common\lang\ReflectionClass');
@@ -239,7 +239,7 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	public function testGlobalNamespacesPerFileWithClassAsFirst() {
 
 		$className = 'GlobalNamespacesPerFileWithClassAsFirst';
-		$classLoader = new DefaultClassLoader();
+		$classLoader = new IncludePathClassLoader();
 		$classLoader->load($className);
 
 		$expected = array(
@@ -260,7 +260,7 @@ class ReflectionClassNamespaceTest extends \PHPUnit_Framework_TestCase {
 	public function testGlobalNamespacesPerFileWithClassAsLast() {
 
 		$className = 'GlobalNamespacesPerFileWithClassAsLast';
-		$classLoader = new DefaultClassLoader();
+		$classLoader = new IncludePathClassLoader();
 		$classLoader->load($className);
 		$expected = array(
 			'Class4' => 'com\mohiva\common\lang\ReflectionClass',
