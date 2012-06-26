@@ -37,7 +37,7 @@ interface Resource {
 	/**
 	 * The class constructor.
 	 *
-	 * @param \SplFileInfo $fileInfo The file info object associated with the resource.
+	 * @param SplFileInfo $fileInfo The file info object associated with the resource.
 	 */
 	public function __construct(SplFileInfo $fileInfo);
 
@@ -51,8 +51,7 @@ interface Resource {
 	/**
 	 * Return the `ResourceStatistics` object for the resource.
 	 *
-	 * @return \com\mohiva\common\io\ResourceStatistics An object containing statistics information
-	 * about a resource.
+	 * @return ResourceStatistics An object containing statistics information about a resource.
 	 */
 	public function getStat();
 
