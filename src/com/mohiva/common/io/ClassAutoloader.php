@@ -160,6 +160,8 @@ class ClassAutoloader {
 	 *
 	 * @param boolean $prepend If true, `register()` will prepend the autoloader on the
 	 * autoload stack instead of appending it.
+	 *
+	 * @throws ClassNotFoundException if the policy is set to `POLICY_EXCEPTION` and class couldn't be found.
 	 */
 	public function register($throw = true, $prepend = true) {
 
