@@ -86,7 +86,7 @@ class DefaultResourceLoaderTest extends \PHPUnit_Framework_TestCase {
 	public function testGetResourceByTypeWithNotExistingType() {
 
 		$loader = new DefaultResourceLoader();
-		$loader->getResourceByType(__FILE__, 'NotExistingResource');
+		$loader->getResourceByType(__FILE__, '\com\mohiva\common\io\NotExistingResource');
 	}
 
 	/**
@@ -110,19 +110,5 @@ class DefaultResourceLoaderTest extends \PHPUnit_Framework_TestCase {
 		$loader->unregisterDescriptor('test:');
 
 		$this->assertArrayNotHasKey('test:', $loader->getRegisteredDescriptors());
-	}
-
-	/**
-	 * Test if can set a `ClassLoader` implementation.
-	 */
-	public function testSetClassLoader() {
-
-		/** @var $stub \com\mohiva\common\io\ClassLoader */
-		$stub = $this->getMock('\com\mohiva\common\io\ClassLoader');
-
-		$loader = new DefaultResourceLoader();
-		$loader->setClassLoader($stub);
-
-		$this->assertSame($stub, $loader->getClassLoader());
 	}
 }

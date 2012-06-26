@@ -18,8 +18,8 @@
  */
 namespace com\mohiva\common\io;
 
-use ReflectionClass;
 use SplFileInfo;
+use com\mohiva\common\exceptions\InvalidArgumentException;
 
 /**
  * The default implementation of the `ResourceLoader` interface.
@@ -35,13 +35,6 @@ use SplFileInfo;
  * @link      https://github.com/mohiva/common
  */
 class DefaultResourceLoader implements ResourceLoader {
-
-	/**
-	 * The `ClassLoader` associated with this object.
-	 *
-	 * @var ClassLoader
-	 */
-	private $classLoader = null;
 
 	/**
 	 * A list with registered file descriptors.
@@ -65,25 +58,21 @@ class DefaultResourceLoader implements ResourceLoader {
 	 * in every implemented `Resource` class.
 	 *
 	 * @param string $path The path to the resource, prefixed with a resource descriptor.
-	 * @return Resource The corresponding resource handle.
-	 * @throws \InvalidArgumentException if the path isn't prefixed with a registered resource descriptor.
+	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
+	 * @throws InvalidArgumentException if the path isn't prefixed with a registered resource descriptor.
 	 */
 	public function getResource($path) {
 
 		$matches = array();
 		$descriptors = implode('|', array_keys($this->descriptors));
 		if (empty($this->descriptors) || !preg_match("@^({$descriptors})(.*)$@", $path, $matches)) {
-			throw new \InvalidArgumentException(
+			throw new InvalidArgumentException(
 				"The path `{$path}` isn't prefixed with a registered resource descriptor"
 			);
 		}
 
 		$handle = $this->descriptors[$matches[1]];
-		$path = $matches[2];
-
-		$loader = $this->getClassLoader();
-		$loader->load($handle);
-		$resource = new $handle(new SplFileInfo($path));
+		$resource = new $handle(new SplFileInfo($matches[2]));
 
 		return $resource;
 	}
@@ -100,12 +89,10 @@ class DefaultResourceLoader implements ResourceLoader {
 	 *
 	 * @param string $path The path to the resource.
 	 * @param string $type The FQN of the resource handle.
-	 * @return Resource The corresponding resource handle.
+	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
 	 */
 	public function getResourceByType($path, $type) {
 
-		$loader = $this->getClassLoader();
-		$loader->load($type);
 		$resource = new $type(new SplFileInfo($path));
 
 		return $resource;
@@ -148,29 +135,5 @@ class DefaultResourceLoader implements ResourceLoader {
 	public function getRegisteredDescriptors() {
 
 		return $this->descriptors;
-	}
-
-	/**
-	 * Specify the `ClassLoader` to load resources with.
-	 *
-	 * @param ClassLoader $classLoader The `ClassLoader` to load resources with.
-	 */
-	public function setClassLoader(ClassLoader $classLoader) {
-
-		$this->classLoader = $classLoader;
-	}
-
-	/**
-	 * Return the `ClassLoader` to load resources with.
-	 *
-	 * @return ClassLoader The `ClassLoader` to load resources with.
-	 */
-	public function getClassLoader() {
-
-		if ($this->classLoader == null) {
-			$this->classLoader = new IncludePathClassLoader();
-		}
-
-		return $this->classLoader;
 	}
 }

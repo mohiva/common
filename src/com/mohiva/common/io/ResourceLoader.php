@@ -37,7 +37,7 @@ interface ResourceLoader {
 	 * should be loaded for the given path.
 	 *
 	 * @param string $path The path to the resource.
-	 * @return Resource The corresponding resource handle.
+	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
 	 */
 	public function getResource($path);
 
@@ -46,21 +46,7 @@ interface ResourceLoader {
 	 *
 	 * @param string $path The path to the resource.
 	 * @param string $type The FQN of the resource handle.
-	 * @return Resource The corresponding resource handle.
+	 * @return \com\mohiva\common\io\Resource The corresponding resource handle.
 	 */
 	public function getResourceByType($path, $type);
-
-	/**
-	 * Specify the ClassLoader to load resources with.
-	 *
-	 * @param ClassLoader $classLoader The `ClassLoader` to load resources with.
-	 */
-	public function setClassLoader(ClassLoader $classLoader);
-
-	/**
-	 * Return the `ClassLoader` to load resources with.
-	 *
-	 * @return ClassLoader The `ClassLoader` to load resources with.
-	 */
-	public function getClassLoader();
 }
