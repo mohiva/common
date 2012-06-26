@@ -18,10 +18,13 @@
  */
 namespace com\mohiva\test\common\io;
 
-use com\mohiva\common\io\IncludePathClassLoader;
+use Exception;
+use com\mohiva\test\common\Bootstrap;
+use com\mohiva\common\io\exceptions\ClassNotFoundException;
+use com\mohiva\common\io\NamespaceClassLoader;
 
 /**
- * Unit test case for the `IncludePathClassLoader` class.
+ * Unit test case for the `NamespaceClassLoader` class.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/Test
@@ -30,12 +33,19 @@ use com\mohiva\common\io\IncludePathClassLoader;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class IncludePathClassLoaderTest extends AbstractClassLoaderTest {
+class NamespaceClassLoaderTest extends AbstractClassLoaderTest {
+
+	/**
+	 * Path to the fixtures to test.
+	 *
+	 * @var string
+	 */
+	const NOT_DEFINED = '\not\defined\namespace\for\ClassFixture';
 
 	/**
 	 * The loader instance.
 	 *
-	 * @var IncludePathClassLoader
+	 * @var NamespaceClassLoader
 	 */
 	protected $loader = null;
 
@@ -44,6 +54,25 @@ class IncludePathClassLoaderTest extends AbstractClassLoaderTest {
 	 */
 	public function setUp() {
 
-		$this->loader = new IncludePathClassLoader();
+		$this->loader = new NamespaceClassLoader();
+		$this->loader->register('com\mohiva\test\resources', Bootstrap::$testDir);
+		$this->loader->register('com_mohiva_test_resources', Bootstrap::$testDir);
+	}
+
+	/**
+	 * Check if the loader throws a `MissingDefinitionException` if no namespace which matches the class
+	 * name is defined.
+	 */
+	public function testLoaderThrowsMissingDefinitionException() {
+
+		try {
+			$this->loader->load(self::NOT_DEFINED);
+		} catch (ClassNotFoundException $e) {
+			$this->assertInstanceOf('com\mohiva\common\io\exceptions\MissingDefinitionException',
+				$e->getPrevious()
+			);
+		} catch (Exception $e) {
+			$this->fail($e->getMessage());
+		}
 	}
 }

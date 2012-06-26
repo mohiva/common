@@ -97,7 +97,6 @@ class ClassAutoloader {
 		if ($classLoader instanceof ClassLoader) {
 			$this->classLoader = $classLoader;
 		} else {
-			require_once 'ClassLoader.php';
 			require_once 'IncludePathClassLoader.php';
 			$this->classLoader = new IncludePathClassLoader();
 		}

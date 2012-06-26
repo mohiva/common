@@ -21,7 +21,7 @@ namespace com\mohiva\common\io\exceptions;
 use com\mohiva\common\exceptions\MohivaException;
 
 /**
- * Signals that a declaration was expected.
+ * Signals that a definition was expected.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions
@@ -30,4 +30,4 @@ use com\mohiva\common\exceptions\MohivaException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class MissingDeclarationException extends \Exception implements MohivaException {}
+class MissingDefinitionException extends \Exception implements MohivaException {}

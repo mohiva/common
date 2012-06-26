@@ -20,14 +20,14 @@ namespace com\mohiva\common\io;
 
 use Exception;
 use com\mohiva\common\io\exceptions\MalformedNameException;
-use com\mohiva\common\io\exceptions\MissingDeclarationException;
+use com\mohiva\common\io\exceptions\MissingDefinitionException;
 use com\mohiva\common\io\exceptions\ClassNotFoundException;
 use com\mohiva\common\io\exceptions\FileNotFoundException;
 
 require_once 'AbstractClassLoader.php';
 
 /**
- * `ClassLoader` implementation which loads classes from include path.
+ * `ClassLoader` implementation which loads classes which matches the registered namespaces.
  *
  * This is a full PSR-0 compatible class loader implementation as proposed by
  * the Framework Interoperability Group. Fore more information visit the proposal
@@ -40,7 +40,29 @@ require_once 'AbstractClassLoader.php';
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class IncludePathClassLoader extends AbstractClassLoader {
+class NamespaceClassLoader extends AbstractClassLoader {
+
+	/**
+	 * The registered namespaces and their associated paths.
+	 *
+	 * @var array
+	 */
+	private $namespaces = [];
+
+	/**
+	 * Registers a namespace/path pair.
+	 *
+	 * A namespace should not be defined fully qualified. This means it should be defined without the leading
+	 * namespace separator.
+	 *
+	 * @param string $namespace The namespace for which the path should be registered.
+	 * @param string $path The lookup path for the classes which matches the given namespace.
+	 */
+	public function register($namespace, $path) {
+
+		$namespace = ltrim($namespace, '\\');
+		$this->namespaces[$namespace] = $path;
+	}
 
 	/**
 	 * Loads the given class from include path.
@@ -61,35 +83,56 @@ class IncludePathClassLoader extends AbstractClassLoader {
 		}
 
 		try {
+			$path = $this->getNamespacePath($fqn);
 			$fileName = $this->toFileName($fqn);
-			$fileName = $this->getClassFileFromIncludePath($fileName);
+			$fileName = $this->getClassFileFromPath($path, $fileName);
 			$this->loadClassFromFile($fqn, $fileName);
 		} catch (Exception $e) {
 			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/IOException.php';
 			require_once 'exceptions/ClassNotFoundException.php';
-			throw new ClassNotFoundException("The class `{$fqn}` cannot be found", null, $e);
+			throw new ClassNotFoundException("The class `{$fqn}` cannot be found", 0, $e);
 		}
 	}
 
 	/**
-	 * This method search the given file in include path and then return the
-	 * absolute path for it.
+	 * Gets the path for the namespace which matches the given FQN.
 	 *
+	 * @param string $fqn A fully qualified name.
+	 * @return string The lookup path for the given class.
+	 * @throws MissingDefinitionException if the FQN doesn't match a namespace.
+	 */
+	private function getNamespacePath($fqn) {
+
+		$fqn = ltrim($fqn, '\\');
+		foreach ($this->namespaces as $namespace => $path) {
+			if (strpos($fqn, $namespace) === 0) {
+				return $path;
+			}
+		}
+
+		require_once __DIR__ . '/../exceptions/MohivaException.php';
+		require_once 'exceptions/MissingDeclarationException.php';
+		throw new MissingDefinitionException("No namespace for class or interface `{$fqn}` defined");
+	}
+
+	/**
+	 * This method checks if the given file exists in the given path.
+	 *
+	 * @param string $path The path from which the file should be loaded.
 	 * @param string $fileName The name of the file to load.
 	 * @return string The absolute path to the file.
-	 * @throws FileNotFoundException if the given file cannot be found in the include path or it isn't readable.
+	 * @throws FileNotFoundException if the given file cannot be found in the given path or it isn't readable.
 	 */
-	private function getClassFileFromIncludePath($fileName) {
+	private function getClassFileFromPath($path, $fileName) {
 
-		$file = stream_resolve_include_path($fileName);
-		if ($file === false) {
-			$includePath = get_include_path();
+		$file = $path . DIRECTORY_SEPARATOR . $fileName;
+		if (!is_readable($file)) {
 			require_once __DIR__ . '/../exceptions/MohivaException.php';
 			require_once 'exceptions/IOException.php';
 			require_once 'exceptions/FileNotFoundException.php';
 			throw new FileNotFoundException(
-				"The file `{$fileName}` doesn't exists in include path `{$includePath}` or it isn't readable"
+				"The file `{$fileName}` doesn't exists in path `{$path}` or it isn't readable"
 			);
 		}
 
