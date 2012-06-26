@@ -21,7 +21,7 @@ namespace com\mohiva\common\io\exceptions;
 use com\mohiva\common\exceptions\MohivaException;
 
 /**
- * Signals that a declaration isn't defined.
+ * Signals that a declaration was expected.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/IO/Exceptions

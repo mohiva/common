@@ -18,10 +18,11 @@
  */
 namespace com\mohiva\test\common\io;
 
+use Exception;
 use com\mohiva\test\common\Bootstrap;
 use com\mohiva\common\io\ClassLoader;
 use com\mohiva\common\io\ClassAutoloader;
-use com\mohiva\common\io\DefaultClassLoader;
+use com\mohiva\common\io\IncludePathClassLoader;
 
 /**
  * Unit test case for the `ClassAutoloader` class.
@@ -38,7 +39,7 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Contains the registered autoloader for this test case.
 	 *
-	 * @var \com\mohiva\common\io\ClassAutoloader
+	 * @var ClassAutoloader
 	 */
 	private $autoLoader = null;
 
@@ -64,7 +65,7 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testConstructorAccessors() {
 
-		$classLoader = new DefaultClassLoader();
+		$classLoader = new IncludePathClassLoader();
 		$autoLoader = new ClassAutoloader($classLoader);
 
 		$this->assertSame($classLoader, $autoLoader->getClassLoader());
@@ -107,7 +108,7 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Check if the autoloader can be registered.
 	 */
-	public function testIfAutloaderCanBeRegistered() {
+	public function testIfAutoloaderCanBeRegistered() {
 
 		$this->autoLoader = new ClassAutoloader();
 		$this->autoLoader->register();
@@ -128,7 +129,7 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Check if the autoloader can be unregistered.
 	 */
-	public function testIfAutloaderCanBeUnregistered() {
+	public function testIfAutoloaderCanBeUnregistered() {
 
 		// Register the autoloader first
 		$this->autoLoader = new ClassAutoloader();
@@ -214,7 +215,7 @@ class ClassAutoloaderTest extends \PHPUnit_Framework_TestCase {
 
 		try {
 			class_exists('NotExistingClass', true);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->fail("Autoloader mustn't throw an exception");
 		}
 	}

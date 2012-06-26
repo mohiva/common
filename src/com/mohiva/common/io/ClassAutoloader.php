@@ -90,16 +90,15 @@ class ClassAutoloader {
 	 * The class constructor.
 	 *
 	 * @param ClassLoader $classLoader The `ClassLoader` implementation to use for class loading
-	 * or null to use the `DefaultClassLoader` implementation.
+	 * or null to use the `IncludePathClassLoader` implementation.
 	 */
 	public function __construct(ClassLoader $classLoader = null) {
 
 		if ($classLoader instanceof ClassLoader) {
 			$this->classLoader = $classLoader;
 		} else {
-			require_once 'ClassLoader.php';
-			require_once 'DefaultClassLoader.php';
-			$this->classLoader = new DefaultClassLoader(false);
+			require_once 'IncludePathClassLoader.php';
+			$this->classLoader = new IncludePathClassLoader();
 		}
 	}
 
@@ -161,6 +160,8 @@ class ClassAutoloader {
 	 *
 	 * @param boolean $prepend If true, `register()` will prepend the autoloader on the
 	 * autoload stack instead of appending it.
+	 *
+	 * @throws ClassNotFoundException if the policy is set to `POLICY_EXCEPTION` and the class couldn't be found.
 	 */
 	public function register($throw = true, $prepend = true) {
 
