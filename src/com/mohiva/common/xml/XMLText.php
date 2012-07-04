@@ -19,7 +19,7 @@
 namespace com\mohiva\common\xml;
 
 /**
- * Provides an SimpleXML like api on top of the DOMAttr implementation.
+ * Implementation of the DOMText class which fixes the line number bug.
  *
  * @category  Mohiva/Common
  * @package   Mohiva/Common/XML
@@ -28,61 +28,32 @@ namespace com\mohiva\common\xml;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class XMLAttribute extends \DOMAttr {
+class XMLText extends \DOMText {
 
 	/**
-	 * Return the value as string.
+	 * The XMLDocument object associated with this node.
 	 *
-	 * @return string The attribute value casted as string.
+	 * @var XMLDocument
 	 */
-	public function __toString() {
-
-		return $this->toString();
-	}
+	public $ownerDocument = null;
 
 	/**
-	 * Return the value as boolean.
+	 * Gets line number for where the node is defined.
 	 *
-	 * @return bool The attribute value casted as boolean.
+	 * The method `DOMNode::getLineNo()` does not return the correct line number for text nodes. So this method
+	 * can return either the original line number returned by libxml or the fixed and correct line number
+	 * created by the `XMLDocument::fixLineNumbers()` method.
+	 *
+	 * @return int Either the original line number returned by libxml or the fixed and correct line number
+	 * created by the `XMLDocument::fixLineNumbers()` method.
 	 */
-	public function toBool() {
+	public function getLineNo() {
 
-		if ($this->value === 'true') {
-			return true;
-		} else if ($this->value === 'false') {
-			return false;
-		} else {
-			return (bool) $this->value;
+		$container = $this->ownerDocument->getLineNumberContainer();
+		if ($container && $container->contains($this)) {
+			return $container->offsetGet($this);
 		}
-	}
 
-	/**
-	 * Return the value as int.
-	 *
-	 * @return int The attribute value casted as int.
-	 */
-	public function toInt() {
-
-		return (int) $this->value;
-	}
-
-	/**
-	 * Return the value as float.
-	 *
-	 * @return float The attribute value casted as float.
-	 */
-	public function toFloat() {
-
-		return (float) $this->value;
-	}
-
-	/**
-	 * Return the value as string.
-	 *
-	 * @return string The attribute value casted as string.
-	 */
-	public function toString() {
-
-		return (string) $this->value;
+		return parent::getLineNo();
 	}
 }

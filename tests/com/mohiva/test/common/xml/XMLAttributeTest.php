@@ -33,46 +33,81 @@ use com\mohiva\common\xml\XMLDocument;
 class XMLAttributeTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * Test if a node value can be converted to boolean.
+	 * Test if the `__toString` method returns a node value as string.
 	 */
-	public function testToBool() {
+	public function testMagicToString() {
 
-		$config = new XMLDocument;
-		$config->root('config')->attribute('default', true);
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('email', 'user@domain.com');
 
-		$this->assertTrue($config('#/config/attribute::default')->toBool());
+		$this->assertSame('user@domain.com', (string) $doc('#/config/@email'));
 	}
 
 	/**
-	 * Test if a node value can be converted to int.
+	 * Test if the `toBool` method returns a boolean `true` if the attribute contains the string representation
+	 * of a boolean `true`.
 	 */
-	public function testToInt() {
+	public function testToBoolReturnsTrueOnBooleanTrue() {
 
-		$config = new XMLDocument;
-		$config->root('config')->attribute('number', 12345);
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('default', 'true');
 
-		$this->assertSame($config('#/config/attribute::number')->toInt(), 12345);
+		$this->assertTrue($doc('#/config/@default')->toBool());
 	}
 
 	/**
-	 * Test if a node value can be converted to float.
+	 * Test if the `toBool` method returns a boolean `false` if the attribute contains the string representation
+	 * of a boolean `false`.
 	 */
-	public function testToFloat() {
+	public function testToBoolReturnsFalseOnBooleanFalse() {
 
-		$config = new XMLDocument;
-		$config->root('config')->attribute('number', 1.12345);
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('default', 'false');
 
-		$this->assertSame($config('#/config/attribute::number')->toFloat(), 1.12345);
+		$this->assertFalse($doc('#/config/@default')->toBool());
 	}
 
 	/**
-	 * Test if a node value can be converted to string.
+	 * Test if the `toBool` method returns the boolean value for a string.
 	 */
-	public function testToString() {
+	public function testToBoolReturnsBooleanValueForString() {
 
-		$config = new XMLDocument;
-		$config->root('config')->attribute('email', 'user@domain.com');
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('default', 'test');
 
-		$this->assertSame($config('#/config/attribute::email')->toString(), 'user@domain.com');
+		$this->assertTrue($doc('#/config/@default')->toBool());
+	}
+
+	/**
+	 * Test if the `toInt` method returns a node value as int.
+	 */
+	public function testToIntReturnsIntegerValue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('number', '12345');
+
+		$this->assertSame(12345, $doc('#/config/@number')->toInt());
+	}
+
+	/**
+	 * Test if the `toFloat` method returns a node value as float.
+	 */
+	public function testToFloatReturnsFloatingPointValue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('number', '1.12345');
+
+		$this->assertSame(1.12345, $doc('#/config/@number')->toFloat());
+	}
+
+	/**
+	 * Test if the `toString` method returns a node value as string.
+	 */
+	public function testToStringReturnsStringValue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config')->attribute('email', 'user@domain.com');
+
+		$this->assertSame('user@domain.com', $doc('#/config/@email')->toString());
 	}
 }

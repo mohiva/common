@@ -18,6 +18,13 @@
  */
 namespace com\mohiva\common\xml;
 
+use Exception;
+use DOMNode;
+use DOMXPath;
+use DOMDocument;
+use ArrayAccess;
+use Serializable;
+use SplObjectStorage;
 use com\mohiva\common\io\exceptions\IOException;
 use com\mohiva\common\xml\exceptions\XMLException;
 
@@ -31,7 +38,7 @@ use com\mohiva\common\xml\exceptions\XMLException;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
+class XMLDocument extends DOMDocument implements ArrayAccess, Serializable {
 
 	/**
 	 * Default xml version.
@@ -50,16 +57,43 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	/**
 	 * The xpath object for this document.
 	 *
-	 * @var \DOMXpath
+	 * @var DOMXpath
 	 */
 	public $xpath = null;
+
+	/**
+	 * The root object of this document.
+	 *
+	 * @var XMLElement
+	 */
+	public $documentElement = null;
+
+	/**
+	 * Indicates if the line number bug for text and comment nodes should be fixed or not. This property
+	 * must be set before loading the document. Setting the property after loading the document ends in
+	 * an unexpected behaviour.
+	 *
+	 * Note: When setting this property to `true` then the `$preserveWhiteSpace` property has no affect.
+	 * Because this property will be automatically set to `true` before document loading. This is necessary
+	 * to recognize the correct line numbers.
+	 *
+	 * @var bool
+	 */
+	public $fixLineNumbers = false;
+
+	/**
+	 * Contains the fixed line numbers for the text and comment nodes.
+	 *
+	 * @var SplObjectStorage
+	 */
+	private $lineNumberContainer = null;
 
 	/**
 	 * Bitwise OR of the libxml option constants used for this document.
 	 *
 	 * @var int
 	 */
-	protected $options = 0;
+	private $options = 0;
 
 	/**
 	 * The class constructor.
@@ -73,6 +107,8 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 
 		$this->registerNodeClass('DOMElement', __NAMESPACE__ . '\XMLElement');
 		$this->registerNodeClass('DOMAttr', __NAMESPACE__ . '\XMLAttribute');
+		$this->registerNodeClass('DOMText', __NAMESPACE__ . '\XMLText');
+		$this->registerNodeClass('DOMComment', __NAMESPACE__ . '\XMLComment');
 
 		$this->setupXPath();
 	}
@@ -85,7 +121,7 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	 * or null if no result exists.
 	 *
 	 * @param string $query The query string to process.
-	 * @return \DOMNodeList | XMLElement | XMLAttribute | null The result of the xpath query.
+	 * @return mixed The result of the xpath query.
 	 */
 	public function __invoke($query) {
 
@@ -149,22 +185,25 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	 * @param string $file Path to the XML file to load.
 	 * @param int $options Bitwise OR of the libxml option constants.
 	 * @throws IOException if the file cannot be loaded.
+	 * @return mixed True on success or false on failure. If called statically, returns a
+     * DOMDocument and issues E_STRICT warning.
 	 */
 	public function load($file, $options = 0) {
 
-		$this->options = $options ? $options :
-			LIBXML_COMPACT |
-			LIBXML_DTDATTR |
-			LIBXML_NONET;
+		$this->preserveWhiteSpace = $this->fixLineNumbers ?: $this->preserveWhiteSpace;
+		$this->options = $options ?: LIBXML_COMPACT | LIBXML_DTDATTR | LIBXML_NONET;
 
 		try {
-			parent::load($file, $this->options);
-		} catch (\Exception $e) {
-			throw new IOException("Cannot load xml file `{$file}`", null, $e);
+			$result = parent::load($file, $this->options);
+		} catch (Exception $e) {
+			throw new IOException("Cannot load xml file `{$file}`", 0, $e);
 		}
 
 		$this->encoding = $this->xmlEncoding ?: self::XML_ENCODING;
 		$this->setupXPath();
+		$this->fixLineNumbers();
+
+		return $result;
 	}
 
 	/**
@@ -172,23 +211,26 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	 *
 	 * @param string $source The string containing the XML.
 	 * @param int $options Bitwise OR of the libxml option constants.
-	 * @throws XMLException if the XML cannot be loaded from the given source.
+	 * @throws exceptions\XMLException if the XML isn't valid.
+	 * @return mixed True on success or false on failure. If called statically, returns a
+     * DOMDocument and issues E_STRICT warning.
 	 */
 	public function loadXML($source, $options = 0) {
 
-		$this->options = $options ? $options :
-			LIBXML_COMPACT |
-			LIBXML_DTDATTR |
-			LIBXML_NONET;
+		$this->preserveWhiteSpace = $this->fixLineNumbers ?: $this->preserveWhiteSpace;
+		$this->options = $options ?: LIBXML_COMPACT | LIBXML_DTDATTR | LIBXML_NONET;
 
 		try {
-			parent::loadXML($source, $this->options);
+			$result = parent::loadXML($source, $this->options);
 		} catch (\Exception $e) {
-			throw new XMLException("Cannot load XML from the given source `{$source}`", null, $e);
+			throw new XMLException("Cannot load XML from the given source `{$source}`", 0, $e);
 		}
 
 		$this->encoding = $this->xmlEncoding ?: self::XML_ENCODING;
 		$this->setupXPath();
+		$this->fixLineNumbers();
+
+		return $result;
 	}
 
 	/**
@@ -227,7 +269,7 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	 * @param string $name The name of the child attribute to set.
 	 * @param mixed $value If specified, the value of the attribute.
 	 * @param string $namespace If specified, the namespace to which the attribute belongs.
-	 * @return XMLElement The root node to providing a fluent interface.
+	 * @return XMLElement The root node to provide a fluent interface.
 	 * @throws XMLException if no root node exists.
 	 */
 	public function attribute($name, $value, $namespace = null) {
@@ -298,7 +340,10 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 			return null;
 		}
 
-		return $this->documentElement->getAttributeNode($name);
+		/* @var XMLAttribute $attribute */
+		$attribute = $this->documentElement->getAttributeNode($name);
+
+		return $attribute;
 	}
 
 	/**
@@ -350,12 +395,47 @@ class XMLDocument extends \DOMDocument implements \ArrayAccess, \Serializable {
 	}
 
 	/**
+	 * Returns the line number container.
+	 *
+	 * @return SplObjectStorage Contains the fixed line numbers for the text and comment nodes.
+	 */
+	public function getLineNumberContainer() {
+
+		return $this->lineNumberContainer;
+	}
+
+	/**
 	 * Setup the XPath object.
 	 */
-	protected function setupXPath() {
+	private function setupXPath() {
 
-		$this->xpath = new \DOMXPath($this);
+		$this->xpath = new DOMXPath($this);
 		$this->xpath->registerNamespace("php", "http://php.net/xpath");
 		$this->xpath->registerPHPFunctions();
+	}
+
+	/**
+	 * Fix the line numbers for the text and comment nodes.
+	 */
+	private function fixLineNumbers() {
+
+		if (!$this->fixLineNumbers) {
+			$this->lineNumberContainer = null;
+			return;
+		}
+
+		$this->lineNumberContainer = new SplObjectStorage();
+		$nodes = $this->xpath->query('//text()|//comment()');
+		foreach ($nodes as $node) {
+			$parentLineNo = $node->parentNode->getLineNo();
+			$previousContent = '';
+			$temp = $node;
+			While ($temp = $temp->previousSibling) {
+				$previousContent = $this->saveXML($temp) . $previousContent;
+			}
+
+			$lines = substr_count($previousContent, "\n");
+			$this->lineNumberContainer->attach($node, $parentLineNo + $lines);
+		}
 	}
 }
