@@ -18,6 +18,7 @@
  */
 namespace com\mohiva\common\xml\io;
 
+use Exception;
 use SplFileInfo;
 use com\mohiva\common\io\Resource;
 use com\mohiva\common\io\ResourceStatistics;
@@ -25,8 +26,7 @@ use com\mohiva\common\io\exceptions\ReadException;
 use com\mohiva\common\io\exceptions\WriteException;
 use com\mohiva\common\io\exceptions\RemoveException;
 use com\mohiva\common\io\events\ResourceStatisticsChangeEvent;
-use \com\mohiva\common\xml\XMLDocument;
-use \com\mohiva\common\xml\XMLElement;
+use com\mohiva\common\xml\XMLDocument;
 
 /**
  * Class which represents a XML document resource.
@@ -57,21 +57,21 @@ class XMLResource implements Resource {
 	/**
 	 * The file info object associated with this resource.
 	 *
-	 * @var \SplFileInfo
+	 * @var SplFileInfo
 	 */
 	private $fileInfo = null;
 
 	/**
 	 * The XMLDocument object associated with this resource.
 	 *
-	 * @var \com\mohiva\common\xml\XMLDocument
+	 * @var XMLDocument
 	 */
 	private $document = null;
 
 	/**
 	 * The class constructor.
 	 *
-	 * @param \SplFileInfo $fileInfo The file info object associated with the resource.
+	 * @param SplFileInfo $fileInfo The file info object associated with the resource.
 	 */
 	public function __construct(SplFileInfo $fileInfo) {
 
@@ -81,7 +81,7 @@ class XMLResource implements Resource {
 	/**
 	 * Set the object handle for the resource.
 	 *
-	 * @param \com\mohiva\common\xml\XMLDocument $document The object handle of the resource.
+	 * @param XMLDocument $document The object handle of the resource.
 	 */
 	public function setHandle(XMLDocument $document) {
 
@@ -91,7 +91,7 @@ class XMLResource implements Resource {
 	/**
 	 * Return the object handle of the resource.
 	 *
-	 * @return \com\mohiva\common\xml\XMLDocument The object handle of the resource.
+	 * @return XMLDocument The object handle of the resource.
 	 */
 	public function getHandle() {
 
@@ -111,8 +111,7 @@ class XMLResource implements Resource {
 	 *   <li>access time</li>
 	 * </ul>
 	 *
-	 * @return \com\mohiva\common\io\ResourceStatistics An object containing statistics information
-	 * about a resource.
+	 * @return ResourceStatistics An object containing statistics information about a resource.
 	 */
 	public function getStat() {
 
@@ -126,8 +125,8 @@ class XMLResource implements Resource {
 		// The event listener used to set the modification and access time
 		$fileInfo = $this->fileInfo;
 		$listener = function(ResourceStatisticsChangeEvent $event) use ($fileInfo) {
-			/* @var \com\mohiva\common\io\ResourceStatistics $target */
-			/* @var \SplFileInfo $fileInfo */
+			/* @var ResourceStatistics $target */
+			/* @var SplFileInfo $fileInfo */
 			$target = $event->getTarget();
 			touch($fileInfo->getPathname(), $target->getModificationTime(), $target->getAccessTime());
 		};
@@ -156,7 +155,7 @@ class XMLResource implements Resource {
 	/**
 	 * Read the content of the resource and return it.
 	 *
-	 * @return \com\mohiva\common\xml\XMLDocument The root node of the XML document.
+	 * @return XMLDocument The root node of the XML document.
 	 * @throws ReadException if cannot be read from resource.
 	 */
 	public function read() {
@@ -164,8 +163,8 @@ class XMLResource implements Resource {
 		$document = $this->getHandle();
 		try {
 			$document->load($this->fileInfo->getPathname());
-		} catch(\Exception $e) {
-			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch(Exception $e) {
+			throw new ReadException("Cannot read from resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		return $document;
@@ -186,8 +185,8 @@ class XMLResource implements Resource {
 		try {
 			$document->loadXML($data);
 			$document->save($this->fileInfo->getPathname());
-		} catch (\Exception $e) {
-			throw new WriteException("Cannot write to the resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new WriteException("Cannot write to the resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 	}
 
@@ -206,8 +205,8 @@ class XMLResource implements Resource {
 
 		try {
 			unlink($this->fileInfo->getPathname());
-		} catch (\Exception $e) {
-			throw new RemoveException("Cannot remove the resource: {$this->fileInfo->getPathname()}", null, $e);
+		} catch (Exception $e) {
+			throw new RemoveException("Cannot remove the resource: {$this->fileInfo->getPathname()}", 0, $e);
 		}
 
 		return true;

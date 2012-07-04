@@ -35,18 +35,154 @@ use com\mohiva\common\xml\exceptions\XMLException;
 class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 
 	/**
+	 * Test if can create an empty document with the default version and encoding.
+	 */
+	public function testCreateDocumentWithDefaultValues() {
+
+		$doc = new XMLDocument;
+
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>', trim($doc->saveXML()));
+	}
+
+	/**
+	 * Test if can create an empty document with a specified version and encoding.
+	 */
+	public function testCreateDocumentWithVersionAndEncoding() {
+
+		$doc = new XMLDocument('1.1', 'ISO-8859-1');
+		$this->assertEquals('<?xml version="1.1" encoding="ISO-8859-1"?>', trim($doc->saveXML()));
+	}
+
+	/**
+	 * Test if the `__invoke` method returns a single item from a node list.
+	 */
+	public function testInvokeReturnsSingleItem() {
+
+		$doc = new XMLDocument;
+		$config = $doc->root('config');
+		$config->child('email');
+
+		$element = $doc('#/config/email');
+
+		$this->assertInstanceOf('\DOMNode', $element);
+	}
+
+	/**
+	 * Test if the `__invoke` method returns `null` if a requested single element does not exists.
+	 */
+	public function testInvokeReturnNullIfSingleElementDoesNotExists() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$element = $doc('#/config/email');
+
+		$this->assertNull($element);
+	}
+
+	/**
+	 * Test the `__invoke` method returns a node list when sending a normal XPath query.
+	 */
+	public function testInvokeReturnsNodeList() {
+
+		$doc = new XMLDocument;
+		$config = $doc->root('config');
+		$config->child('email');
+		$element = $doc('/config/email');
+
+		$this->assertInstanceOf('\DOMNodeList', $element);
+	}
+
+	/**
+	 * Test if can clone an empty document.
+	 */
+	public function testCloneEmptyDocument() {
+
+		$doc = new XMLDocument();
+
+		$this->assertNotSame($doc, clone $doc);
+	}
+
+	/**
+	 * Test if the clone of an empty document can be modified after cloning.
+	 */
+	public function testIfEmptyClonedDocumentCanBeModified() {
+
+		$doc = new XMLDocument();
+
+		$clone = clone $doc;
+		$config = $clone->root('config', 'value');
+
+		$this->assertSame('value', $config->toString());
+	}
+
+	/**
+	 * Test if can clone a not empty document.
+	 */
+	public function testCloneNotEmptyDocument() {
+
+		$doc = new XMLDocument();
+		$doc->root('config')->child('child');
+
+		$this->assertNotSame($doc, clone $doc);
+	}
+
+	/**
+	 * Test if the clone of a not empty document can be modified after cloning.
+	 */
+	public function testIfNotEmptyClonedDocumentCanBeModified() {
+
+		$doc = new XMLDocument();
+		$doc->root('config')->child('child');
+
+		$clone = clone $doc;
+		$placeholder = $clone->createElement('__node__', 'id');
+		$node = $clone('#/config/child');
+		$node->parentNode->replaceChild($placeholder, $node);
+
+		$this->assertSame('id', $clone('#/config/__node__')->toString());
+	}
+
+	/**
+	 * Test if can serialize/unserialize a not empty XML document.
+	 */
+	public function testSerializableInterfaceForNotEmptyDocument() {
+
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+
+		/* @var XMLDocument $unserialized */
+		$serialized = serialize($doc);
+		$unserialized = unserialize($serialized);
+
+		$this->assertXmlStringEqualsXmlString($doc->saveXML(), $unserialized->saveXML());
+	}
+
+	/**
+	 * Test if can serialize/unserialize an empty XML document.
+	 */
+	public function testSerializableInterfaceForEmptyDocument() {
+
+		$doc = new XMLDocument();
+		$serialized = serialize($doc);
+
+		/* @var XMLDocument $unserialized */
+		$unserialized = unserialize($serialized);
+		$this->assertEquals($doc->saveXML(), $unserialized->saveXML());
+	}
+
+	/**
 	 * Test if can load a XML file.
 	 */
 	public function testLoadXMLFile() {
 
 		try {
-			$config = new XMLDocument();
-			$config->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+			$doc = new XMLDocument();
+			$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
 		} catch (\Exception $e) {
 			$this->fail($e->getMessage());
 		}
 
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLDocument', $config);
+		$this->assertInstanceOf('com\mohiva\common\xml\XMLDocument', $doc);
 	}
 
 	/**
@@ -55,13 +191,13 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadXMLFromString() {
 
 		try {
-			$config = new XMLDocument();
-			$config->loadXML('<config><node></node></config>');
+			$doc = new XMLDocument();
+			$doc->loadXML('<config><node></node></config>');
 		} catch (\Exception $e) {
 			$this->fail($e->getMessage());
 		}
 
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLDocument', $config);
+		$this->assertInstanceOf('com\mohiva\common\xml\XMLDocument', $doc);
 	}
 
 	/**
@@ -69,10 +205,10 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testDefaultEncodingFromFile() {
 
-		$config = new XMLDocument();
-		$config->load(Bootstrap::$resourceDir . '/common/xml/no_encoding.xml');
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/no_encoding.xml');
 
-		$this->assertSame(XMLDocument::XML_ENCODING, $config->xmlEncoding);
+		$this->assertSame(XMLDocument::XML_ENCODING, $doc->xmlEncoding);
 	}
 
 	/**
@@ -80,10 +216,10 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testDefaultEncodingFromString() {
 
-		$config = new XMLDocument();
-		$config->loadXML('<config><node></node></config>');
+		$doc = new XMLDocument();
+		$doc->loadXML('<config><node></node></config>');
 
-		$this->assertSame(XMLDocument::XML_ENCODING, $config->xmlEncoding);
+		$this->assertSame(XMLDocument::XML_ENCODING, $doc->xmlEncoding);
 	}
 
 	/**
@@ -93,8 +229,8 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIfFailsOnNonExistingFile() {
 
-		$config = new XMLDocument();
-		$config->load('/not/existing.xml');
+		$doc = new XMLDocument();
+		$doc->load('/not/existing.xml');
 	}
 
 	/**
@@ -104,143 +240,193 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testIfFailsOnInvalidString() {
 
-		$config = new XMLDocument();
-		$config->loadXML('<config><config>');
+		$doc = new XMLDocument();
+		$doc->loadXML('<config><config>');
 	}
 
 	/**
-	 * Test if throws an `XMLException` if setting the root node twice.
+	 * Test if the `$preserveWhiteSpace` property will be set to true if the `$fixLineNumbers`
+	 * property is set to true.
+	 */
+	public function testFixLineNumbersSetsPreserveWhiteSpaceToTrue() {
+
+		$doc = new XMLDocument();
+		$doc->preserveWhiteSpace = false;
+		$doc->fixLineNumbers = true;
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+
+		$this->assertTrue($doc->preserveWhiteSpace);
+	}
+
+	/**
+	 * Test if the `$preserveWhiteSpace` property is not affected when setting the `$fixLineNumbers`
+	 * property to false.
+	 */
+	public function testPreserveWhiteSpaceIsNotAffectedIfFixLineNumbersIsSetToFalse() {
+
+		$doc = new XMLDocument();
+		$doc->preserveWhiteSpace = false;
+		$doc->fixLineNumbers = false;
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+
+		$this->assertFalse($doc->preserveWhiteSpace);
+	}
+
+	/**
+	 * Test if the line numbers will be fixed if the `$fixLineNumbers` property is set to `true`.
+	 */
+	public function testFixLineNumbersIfPropertyIsSetToTrue() {
+
+		$config = new XMLDocument();
+		$config->preserveWhiteSpace = false;
+		$config->fixLineNumbers = true;
+		$config->load(Bootstrap::$resourceDir . '/common/xml/line_no.xml');
+
+		$found = [];
+		$expected = [2, 2, 4, 7, 9, 9, 11, 11, 13, 13, 15, 15, 17, 25, 29, 29];
+		$nodes = $config->xpath->query('//node()');
+		foreach ($nodes as $node) {
+			/* @var \DOMNode $node */
+			$found[] = $node->getLineNo();
+		}
+
+		$this->assertEquals($expected, $found);
+	}
+
+	/**
+	 * Test if the line numbers were not be fixed if the `$fixLineNumbers` property is set to `false`.
+	 */
+	public function testDoesNotFixLineNumbersIfPropertyIsNotSet() {
+
+		$config = new XMLDocument();
+		$config->preserveWhiteSpace = true;
+		$config->fixLineNumbers = false;
+		$config->load(Bootstrap::$resourceDir . '/common/xml/line_no.xml');
+
+		$found = [];
+		$expected = [2, 2, 4, 7, 9, 9, 11, 11, 13, 13, 15, 15, 17, 25, 29, 29];
+		$nodes = $config->xpath->query('//node()');
+		foreach ($nodes as $node) {
+			/* @var \DOMNode $node */
+			$found[] = $node->getLineNo();
+		}
+
+		$this->assertNotEquals($expected, $found);
+	}
+
+	/**
+	 * Test if the `root` method throws an `XMLException` if trying to set the root node twice.
 	 *
 	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
 	 */
-	public function testIfFailsOnSettingRootNodeTwice() {
+	public function testRootThrowsXMLExceptionIfRootNodeAlreadyExists() {
 
-		$config = new XMLDocument();
-		$config->root('first');
-		$config->root('second');
+		$doc = new XMLDocument();
+		$doc->root('first');
+		$doc->root('second');
 	}
 
 	/**
-	 * Test if throws an `XMLException` if try to operate on a non existing root node.
+	 * Test if the `root` method can create an element without a namespace.
 	 */
-	public function testIfFailsOnNonExistingRootNode() {
+	public function testRootMethodCreatesElementWithoutNs() {
 
-		$config = new XMLDocument();
+		$doc = new XMLDocument;
+		$doc->root('config', 'mohiva');
 
-		try {
-			$config->attribute('test', 1);
-			$this->fail('XMLException was expected but never thrown');
-		} catch (\Exception $e) {
-			$this->assertInstanceOf('\com\mohiva\common\xml\exceptions\XMLException', $e);
-		}
-
-		try {
-			$config['test'];
-			$this->fail('XMLException was expected but never thrown');
-		} catch (\Exception $e) {
-			$this->assertInstanceOf('\com\mohiva\common\xml\exceptions\XMLException', $e);
-		}
-
-		try {
-			$config['test'] = 1;
-			$this->fail('XMLException was expected but never thrown');
-		} catch (\Exception $e) {
-			$this->assertInstanceOf('\com\mohiva\common\xml\exceptions\XMLException', $e);
-		}
-
-		try {
-			/** @noinspection PhpExpressionResultUnusedInspection */
-			isset($config['test']);
-			$this->fail('XMLException was expected but never thrown');
-		} catch (\Exception $e) {
-			$this->assertInstanceOf('\com\mohiva\common\xml\exceptions\XMLException', $e);
-		}
-
-		try {
-			unset($config['test']);
-			$this->fail('XMLException was expected but never thrown');
-		} catch (\Exception $e) {
-			$this->assertInstanceOf('\com\mohiva\common\xml\exceptions\XMLException', $e);
-		}
+		$this->assertSame($doc('#/config')->toString(), 'mohiva');
 	}
 
 	/**
-	 * Test to create a document.
+	 * Test if the `root` method can create an element with a namespace.
 	 */
-	public function testCreateDocument() {
+	public function testRootMethodCreatesElementWithNs() {
 
-		$config = new XMLDocument;
-		$this->assertEquals(trim($config->saveXML()), '<?xml version="1.0" encoding="UTF-8"?>');
+		$doc = new XMLDocument;
+		$doc->root('test:config', 'mohiva', 'http://framework.mohiva.com/test');
 
-		$config = new XMLDocument('1.1', 'ISO-8859-1');
-		$this->assertEquals(trim($config->saveXML()), '<?xml version="1.1" encoding="ISO-8859-1"?>');
+		$this->assertSame($doc('#/test:config')->toString(), 'mohiva');
 	}
 
 	/**
-	 * Test the `root` method without a namespace.
+	 * Test if the `root` method can set a boolean `true` as element value.
 	 */
-	public function testRootMethodWithoutNS() {
+	public function testRootMethodCanHandleBooleanTrue() {
 
-		$config = new XMLDocument;
-		$config->root('config', 'mohiva');
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLElement', $config('#/config'));
-		$this->assertSame($config('#/config')->toString(), 'mohiva');
-		$this->assertSame($config('/config')->length, 1);
+		$doc = new XMLDocument;
+		$doc->root('config', true);
+
+		$this->assertTrue($doc('#/config')->toBool());
 	}
 
 	/**
-	 * Test the `attribute` method without a namespace.
+	 * Test if the `root` method can set a boolean `false` as element value.
 	 */
-	public function testAttributeMethodWithoutNS() {
+	public function testRootMethodCanHandleBooleanFalse() {
 
-		$config = new XMLDocument;
-		$config->root('config');
-		$config->attribute('number', 1000);
+		$doc = new XMLDocument;
+		$doc->root('config', false);
 
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLAttribute', $config('#/config/attribute::number'));
-		$this->assertSame($config('#/config/attribute::number')->toInt(), 1000);
-		$this->assertSame($config('/config/attribute::number')->length, 1);
+		$this->assertFalse($doc('#/config')->toBool());
 	}
 
 	/**
-	 * Test the `root` method with a namespace.
+	 * Test if the `attribute` method throws an `XMLException` if the `documentElement`
+	 * property is null.
+	 *
+	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
 	 */
-	public function testRootMethodWithNS() {
+	public function testAttributeMethodThrowsXMLExceptionIfDocumentElementDoesNotExists() {
 
-		$config = new XMLDocument;
-		$config->root('test:config', 'mohiva', 'http://framework.mohiva.com/test');
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLElement', $config('#/test:config'));
-		$this->assertSame($config('#/test:config')->toString(), 'mohiva');
-		$this->assertSame($config('/test:config')->length, 1);
+		(new XMLDocument())->attribute('node', true);
 	}
 
 	/**
-	 * Test the `attribute` method with a namespace.
+	 * Test if the `attribute` method can create an attribute without a namespace.
 	 */
-	public function testAttributeMethodWithNS() {
+	public function testAttributeMethodCreatesAttributeWithoutNs() {
 
-		$config = new XMLDocument;
-		$config->root('config');
-		$config->attribute('test:number', 1000, 'http://framework.mohiva.com/test');
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc->attribute('method', 'smtp');
 
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLAttribute', $config('#/config/attribute::test:number'));
-		$this->assertSame($config('#/config/attribute::test:number')->toInt(), 1000);
-		$this->assertSame($config('/config/attribute::test:number')->length, 1);
+		$this->assertSame('smtp', $doc('#/config/@method')->toString());
 	}
 
 	/**
-	 * Test the `__invoke` method.
+	 * Test if the `attribute` method can create an attribute with a namespace.
 	 */
-	public function testInvokeMethod() {
+	public function testAttributeMethodCreatesAttributeWithNs() {
 
-		$config = new XMLDocument;
-		$config->root('config');
-		$config->attribute('test1', true);
-		$config->attribute('test2', false);
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc->attribute('test:method', 'smtp', 'http://elixir.mohiva.com/test');
 
-		$this->assertInstanceOf('com\mohiva\common\xml\XMLElement', $config('#/config'));
-		$this->assertTrue($config('#//config/attribute::test1')->toBool());
-		$this->assertFalse($config('#//config/attribute::test2')->toBool());
+		$this->assertSame('smtp', $doc('#/config/attribute::test:method')->toString());
+	}
+
+	/**
+	 * Test if the `attribute` method can set a boolean `true` as attribute value.
+	 */
+	public function testAttributeMethodCanHandleBooleanTrue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc->attribute('value', true);
+
+		$this->assertTrue($doc('#/config/@value')->toBool());
+	}
+
+	/**
+	 * Test if the `attribute` method can set a boolean `false` as attribute value.
+	 */
+	public function testAttributeMethodCanHandleBooleanFalse() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc->attribute('value', false);
+
+		$this->assertFalse($doc('#/config/@value')->toBool());
 	}
 
 	/**
@@ -255,10 +441,10 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 			'mx' => 'urn:com.mohiva.framework.xml.helpers'
 		);
 
-		$config = new XMLDocument();
-		$config->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
-		$this->assertSame($namespaces, $config->getNamespaces());
-		$this->assertSame(array(), $config->getNamespaces(array_values($namespaces)));
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+
+		$this->assertSame($namespaces, $doc->getNamespaces());
 	}
 
 	/**
@@ -274,60 +460,172 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 			'custom' => 'urn:com.mohiva.www.xml.files.helpers'
 		);
 
-		$config = new XMLDocument();
-		$config->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
-		$config->xinclude();
-		$this->assertSame($namespaces, $config->getNamespaces());
-		$this->assertSame(array(), $config->getNamespaces(array_values($namespaces)));
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+		$doc->xinclude();
+
+		$this->assertSame($namespaces, $doc->getNamespaces());
 	}
 
 	/**
-	 * Test if can get an attribute with the `ArrayAccess` interface.
+	 * Test if the `getNamespace` method omits a list of namespaces.
 	 */
-	public function testOffsetGet() {
+	public function testGetNamespacesOmitsNamespaces() {
 
-		$config = new XMLDocument();
-		$config->root('config');
-		$config->attribute('attr1', true);
-		$config->attribute('attr2', false);
-		$config->attribute('attr3', 'mohiva');
+		$namespaces = array(
+			'xml' => 'http://www.w3.org/XML/1998/namespace',
+			'xi' => 'http://www.w3.org/2001/XInclude',
+			'test' => 'urn:com.mohiva.test.framework.xml.files.helpers',
+			'mx' => 'urn:com.mohiva.framework.xml.helpers'
+		);
 
-		$this->assertTrue($config['attr1']->toBool());
-		$this->assertFalse($config['attr2']->toBool());
-		$this->assertSame($config['attr3']->toString(), 'mohiva');
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+
+		$this->assertSame(array(), $doc->getNamespaces(array_values($namespaces)));
 	}
 
 	/**
-	 * Test if can set an attribute with the `ArrayAccess` interface.
+	 * Test if the `removeComments` remove all comments inside the document.
 	 */
-	public function testOffsetSet() {
+	public function testRemoveComments() {
 
-		$config = new XMLDocument();
-		$config->root('config');
-		$config['attr1'] = true;
-		$config['attr2'] = false;
-		$config['attr3'] = 'mohiva';
+		$doc = new XMLDocument();
+		$doc->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
+		$doc->removeComments();
 
-		$this->assertTrue($config['attr1']->toBool());
-		$this->assertFalse($config['attr2']->toBool());
-		$this->assertSame($config['attr3']->toString(), 'mohiva');
+		$this->assertEquals(0, $doc('.//comment()')->length);
 	}
 
 	/**
-	 * Test with the `ArrayAccess` interface if an attribute exists.
+	 * Test if the `offsetGet` method throws an `XMLException` if the `documentElement`
+	 * property is null.
+	 *
+	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
 	 */
-	public function testOffsetExists() {
+	public function testOffsetGetThrowsXMLExceptionIfDocumentElementDoesNotExists() {
 
-		$config = new XMLDocument();
-		$config->root('config');
-		$config['attr1'] = true;
-		$config['attr2'] = false;
-		$config['attr3'] = 'mohiva';
+		$doc = new XMLDocument;
+		$doc['test'];
+	}
 
-		$this->assertTrue(isset($config['attr1']));
-		$this->assertTrue(isset($config['attr2']));
-		$this->assertTrue(isset($config['attr3']));
-		$this->assertFalse(isset($config['attr4']));
+	/**
+	 * Test if the `offsetGet` method returns `null` if an attribute does not exists.
+	 */
+	public function testOffsetGetReturnsNullIfAttributeDoesNotExists() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+
+		$this->assertNull($doc['not_existing']);
+	}
+
+	/**
+	 * Test if the `offsetGet` method returns an attribute value.
+	 */
+	public function testOffsetGetReturnsAttributeValue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc->attribute('attr', 'value');
+
+		$this->assertSame('value', $doc['attr']->toString());
+	}
+
+	/**
+	 * Test if the `offsetSet` method throws an `XMLException` if the `documentElement`
+	 * property is null.
+	 *
+	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
+	 */
+	public function testOffsetSetThrowsXMLExceptionIfDocumentElementDoesNotExists() {
+
+		$doc = new XMLDocument;
+		$doc['test'] = 'value';
+	}
+
+	/**
+	 * Test if the `offsetSet` method can set an attribute.
+	 */
+	public function testOffsetSetCanSetAttribute() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc['attr'] = 'test';
+
+		$this->assertSame('test', $doc['attr']->toString());
+	}
+
+	/**
+	 * Test if the `offsetSet` method can set a boolean `true` as attribute value.
+	 */
+	public function testOffsetSetCanHandleBooleanTrue() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc['attr'] = true;
+
+		$this->assertTrue($doc['attr']->toBool());
+	}
+
+	/**
+	 * Test if the `offsetSet` method can set a boolean `false` as attribute value.
+	 */
+	public function testOffsetSetCanHandleBooleanFalse() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc['attr'] = false;
+
+		$this->assertFalse($doc['attr']->toBool());
+	}
+
+	/**
+	 * Test if the `offsetExists` method throws an `XMLException` if the `documentElement`
+	 * property is null.
+	 *
+	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
+	 */
+	public function testOffsetExistsThrowsXMLExceptionIfDocumentElementDoesNotExists() {
+
+		$doc = new XMLDocument;
+		/** @noinspection PhpExpressionResultUnusedInspection */
+		isset($doc['test']);
+	}
+
+	/**
+	 * Test if the `offsetExists` method returns `true` if an attribute exists.
+	 */
+	public function testOffsetExistsReturnsTrueIfAttributeExists() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc['attr'] = true;
+
+		$this->assertTrue(isset($doc['attr']));
+	}
+
+	/**
+	 * Test if the `offsetExists` method returns `false` if an attribute does not exists.
+	 */
+	public function testOffsetExistsReturnsFalseIfAttributeDoesNotExists() {
+
+		$doc = new XMLDocument;
+		$doc->root('config');
+
+		$this->assertFalse(isset($doc['attr']));
+	}
+
+	/**
+	 * Test if the `offsetUnset` method throws an `XMLException` if the `documentElement`
+	 * property is null.
+	 *
+	 * @expectedException \com\mohiva\common\xml\exceptions\XMLException
+	 */
+	public function testOffsetUnsetThrowsXMLExceptionIfDocumentElementDoesNotExists() {
+
+		$doc = new XMLDocument;
+		unset($doc['test']);
 	}
 
 	/**
@@ -335,91 +633,12 @@ class XMLDocumentTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testOffsetUnset() {
 
-		$config = new XMLDocument();
-		$config->root('config');
-		$config['attr1'] = true;
-		$config['attr2'] = false;
-		$config['attr3'] = 'mohiva';
+		$doc = new XMLDocument;
+		$doc->root('config');
+		$doc['attr'] = true;
 
-		unset($config['attr1']);
-		unset($config['attr2']);
-		unset($config['attr3']);
+		unset($doc['attr']);
 
-		$this->assertFalse(isset($config['attr1']));
-		$this->assertFalse(isset($config['attr2']));
-		$this->assertFalse(isset($config['attr3']));
-	}
-
-	/**
-	 * Test if can serialize an XML document.
-	 */
-	public function testSerializing() {
-
-		$config = new XMLDocument();
-		$config->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
-
-		/* @var XMLDocument $unserialized */
-		$serialized = serialize($config);
-		$unserialized = unserialize($serialized);
-
-		$this->assertXmlStringEqualsXmlString($config->saveXML(), $unserialized->saveXML());
-	}
-
-	/**
-	 * Test if can serialize an empty XML document.
-	 */
-	public function testSerializingEmptyDocument() {
-
-		$empty = new XMLDocument();
-		$serialized = serialize($empty);
-
-		/* @var XMLDocument $unserialized */
-		$unserialized = unserialize($serialized);
-		$this->assertEquals($empty->saveXML(), $unserialized->saveXML());
-	}
-
-	/**
-	 * Test if all comments will be removed.
-	 */
-	public function testRemoveComments() {
-
-		$config = new XMLDocument();
-		$config->load(Bootstrap::$resourceDir . '/common/xml/config.xml');
-		$config->removeComments();
-
-		$this->assertEquals(0, $config('.//comment()')->length);
-	}
-
-	/**
-	 * Test if can clone an empty document.
-	 */
-	public function testCloneEmptyDocument() {
-
-		$config = new XMLDocument();
-
-		$config1 = clone $config;
-		$config1->root('config');
-
-		$config2 = clone $config;
-		$config2->root('config');
-	}
-
-	/**
-	 * Test if can clone an document.
-	 */
-	public function testCloneDocument() {
-
-		$config = new XMLDocument();
-		$config->root('config')->child('child');
-
-		$clone = clone $config;
-		$placeholder = $clone->createElement('__node__', 'id');
-		$node = $clone('#/config/child');
-		$node->parentNode->replaceChild($placeholder, $node);
-
-		$clone = clone $config;
-		$placeholder = $clone->createElement('__node__', 'id');
-		$node = $clone('#/config/child');
-		$node->parentNode->replaceChild($placeholder, $node);
+		$this->assertFalse(isset($doc['attr']));
 	}
 }

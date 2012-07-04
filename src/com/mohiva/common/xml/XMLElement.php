@@ -33,6 +33,13 @@ use com\mohiva\common\xml\exceptions\XMLException;
 class XMLElement extends \DOMElement implements \ArrayAccess {
 
 	/**
+	 * The XMLDocument object associated with this node.
+	 *
+	 * @var XMLDocument
+	 */
+	public $ownerDocument = null;
+
+	/**
 	 * Execute a xpath query.
 	 *
 	 * As default behavior this method returns always a node list. But if the query is
@@ -40,7 +47,7 @@ class XMLElement extends \DOMElement implements \ArrayAccess {
 	 * or null if no result exists.
 	 *
 	 * @param string $query The query string to process.
-	 * @return \DOMNodeList | XMLElement | XMLAttribute | null The result of the xpath query.
+	 * @return mixed The result of the xpath query.
 	 * @throws XMLException if the element isn't a child of a DOMDocument.
 	 */
 	public function __invoke($query) {
@@ -78,7 +85,7 @@ class XMLElement extends \DOMElement implements \ArrayAccess {
 	 * @param string $name The name of the child element to add.
 	 * @param mixed $value If specified, the value of the child element.
 	 * @param string $namespace If specified, the namespace to which the child element belongs.
-	 * @return XMLElement The created element to providing a fluent interface.
+	 * @return XMLElement The created element to provide a fluent interface.
 	 * @throws XMLException if the element isn't a child of a DOMDocument.
 	 */
 	public function child($name, $value = null, $namespace = null) {
@@ -107,7 +114,7 @@ class XMLElement extends \DOMElement implements \ArrayAccess {
 	 * @param string $name The name of the child attribute to add.
 	 * @param mixed $value If specified, the value of the attribute.
 	 * @param string $namespace If specified, the namespace to which the attribute belongs.
-	 * @return XMLElement This element to providing a fluent interface.
+	 * @return XMLElement This element to provide a fluent interface.
 	 * @throws XMLException if the element isn't a child of a DOMDocument.
 	 */
 	public function attribute($name, $value, $namespace = null) {
@@ -131,7 +138,7 @@ class XMLElement extends \DOMElement implements \ArrayAccess {
 	/**
 	 * Remove all children within this element.
 	 */
-	public function removeChilds() {
+	public function removeChildren() {
 
 		while ($this->childNodes->length) {
 			$this->removeChild($this->firstChild);
