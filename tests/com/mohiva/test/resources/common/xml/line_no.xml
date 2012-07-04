@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:test="urn:test" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+	<!--
+	XML tags may only be escaped if they are prefixed with an expression opener and postfixed
+	with an expression closer.
+	-->
+
+	<xi:include href="include.xml#xpointer(//books)" parse="xml" />
+
+	{% <tag xmlns:test="urn:test" test:Locale="tag1" />
+
+	{% '<tag xmlns:test="urn:test" test:Locale="tag1" />' %}
+
+	<tag xmlns:test="urn:test" test:Locale="tag1" /> %}
+
+	<!--
+	Previous and following text expressions may not have consequences on XML tags that are between
+	these two.
+
+	The problem ist that the previous text expression has also an expression opener. The lexer
+	must recognize that an expression closer follows and therefore it must recognize that the
+	expression opener is not associated with the XML tag. The same counts for the expression
+	following this tag.
+	-->
+
+	{% var %}
+
+	<tag xmlns:test="urn:test" test:Locale="tag1" />
+
+	{% var %}
+
+</root>
