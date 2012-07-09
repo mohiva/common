@@ -28,4 +28,32 @@ namespace com\mohiva\common\exceptions;
  * @license   https://github.com/mohiva/common/blob/master/LICENSE.textile New BSD License
  * @link      https://github.com/mohiva/common
  */
-class SyntaxErrorException extends \Exception implements MohivaException {}
+class SyntaxErrorException extends \Exception implements MohivaException {
+
+	/**
+	 * The line number in which the syntax error was found.
+	 *
+	 * @var int
+	 */
+	private $lineNo = null;
+
+	/**
+	 * Sets the line number in which the syntax error was found.
+	 *
+	 * @param int $lineNo The line number in which the syntax error was found.
+	 */
+	public function setLineNo($lineNo) {
+
+		$this->lineNo = $lineNo;
+	}
+
+	/**
+	 * Gets the line number in which the syntax error was found.
+	 *
+	 * @return int The line number in which the syntax error was found.
+	 */
+	public function getLineNo() {
+
+		return $this->lineNo;
+	}
+}
