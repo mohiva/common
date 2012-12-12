@@ -1,4 +1,4 @@
-h1. Mohiva Common "!http://travis-ci.org/mohiva/common.png!":http://travis-ci.org/mohiva/common
+h1. Mohiva Common "!https://travis-ci.org/mohiva/common.png!":https://travis-ci.org/mohiva/common
 
 The Mohiva Common project is a PHP library which provides functionality shared by all mohiva projects.
 
